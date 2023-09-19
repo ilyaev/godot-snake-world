@@ -15,6 +15,6 @@ func _process(delta):
 	rotate_z(delta * PI/8)
 	pass
 
-@rpc("any_peer")
+@rpc("any_peer", "call_local")
 func eaten():
 	call_deferred("queue_free")

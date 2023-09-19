@@ -54,7 +54,7 @@ func _add_player(id = 1):
 	call_deferred("add_child", player)
 	
 func _on_join_pressed():
-	await get_tree().create_timer(2.0).timeout
+#	await get_tree().create_timer(2.0).timeout
 	peer.create_client("localhost", 4002)
 	multiplayer.multiplayer_peer = peer
 	mid = multiplayer.get_unique_id()
@@ -72,7 +72,3 @@ func spawn_food():
 	var one = food_scene.instantiate()
 	one.set_multiplayer_authority(1)
 	call_deferred("add_child", one, true)
-
-func _on_multiplayer_spawner_spawned(node):
-#	print(['SPAWN on ', get_type(), node.name, pos])
-	pass # Replace with function body.
