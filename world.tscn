@@ -1,0 +1,51 @@
+[gd_scene load_steps=7 format=3 uid="uid://dwvprvvbvj76u"]
+
+[ext_resource type="Script" path="res://world.gd" id="1_vqwva"]
+[ext_resource type="PackedScene" uid="uid://b12yjbpb35r13" path="res://player.tscn" id="1_wuilo"]
+[ext_resource type="PackedScene" uid="uid://cpmdjemslertf" path="res://walls.tscn" id="2_ntgv0"]
+[ext_resource type="Environment" uid="uid://cyob6fw6aa3w8" path="res://clear_sky.tres" id="2_o4txu"]
+[ext_resource type="PackedScene" uid="uid://bp0vus53jj43y" path="res://food.tscn" id="3_ve1vh"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_6md4k"]
+font_size = 48
+
+[node name="world" type="Node3D"]
+script = ExtResource("1_vqwva")
+player_scene = ExtResource("1_wuilo")
+food_scene = ExtResource("3_ve1vh")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("2_o4txu")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
+
+[node name="camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12.5537)
+size = 20.0
+
+[node name="walls" parent="." instance=ExtResource("2_ntgv0")]
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://player.tscn", "res://food.tscn")
+spawn_path = NodePath("..")
+
+[node name="fps" type="Label" parent="."]
+offset_left = 12.0
+offset_top = 8.0
+offset_right = 434.0
+offset_bottom = 115.0
+text = "FPS"
+label_settings = SubResource("LabelSettings_6md4k")
+
+[node name="label_type" type="Label" parent="."]
+offset_left = 714.0
+offset_top = 2.0
+offset_right = 1136.0
+offset_bottom = 109.0
+text = "FPS"
+label_settings = SubResource("LabelSettings_6md4k")
+horizontal_alignment = 2
+
+[connection signal="spawned" from="MultiplayerSpawner" to="." method="_on_multiplayer_spawner_spawned"]

@@ -1,0 +1,56 @@
+[gd_scene load_steps=7 format=3 uid="uid://b12yjbpb35r13"]
+
+[ext_resource type="Script" path="res://player.gd" id="1_0asij"]
+[ext_resource type="PackedScene" uid="uid://d4fr2r1suq4x0" path="res://tails.tscn" id="2_du4yk"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_qgdxa"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_0tqjp"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_8cunk"]
+properties/0/path = NodePath(".:alpha")
+properties/0/spawn = true
+properties/0/sync = true
+properties/0/watch = true
+properties/1/path = NodePath(".:speed")
+properties/1/spawn = true
+properties/1/sync = true
+properties/1/watch = true
+properties/2/path = NodePath("body:position")
+properties/2/spawn = true
+properties/2/sync = false
+properties/2/watch = false
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_re4xi"]
+properties/0/path = NodePath("body:position")
+properties/0/spawn = true
+properties/0/sync = true
+properties/0/watch = true
+properties/1/path = NodePath(".:visible")
+properties/1/spawn = false
+properties/1/sync = false
+properties/1/watch = true
+
+[node name="player" type="Node3D"]
+visible = false
+script = ExtResource("1_0asij")
+
+[node name="tails" parent="." instance=ExtResource("2_du4yk")]
+
+[node name="body" type="StaticBody3D" parent="."]
+collision_mask = 3
+
+[node name="head" type="MeshInstance3D" parent="body"]
+mesh = SubResource("SphereMesh_qgdxa")
+skeleton = NodePath("../..")
+
+[node name="shape" type="CollisionShape3D" parent="body"]
+shape = SubResource("SphereShape3D_0tqjp")
+
+[node name="MultiplayerSynchronizerRT" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_8cunk")
+
+[node name="MultiplayerSynchronizerInterval" type="MultiplayerSynchronizer" parent="."]
+replication_interval = 1.0
+delta_interval = 1.0
+replication_config = SubResource("SceneReplicationConfig_re4xi")

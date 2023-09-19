@@ -1,0 +1,36 @@
+[gd_scene load_steps=7 format=3 uid="uid://dmspla5shclwy"]
+
+[ext_resource type="Script" path="res://tail.gd" id="1_ccipo"]
+[ext_resource type="Shader" path="res://tail.gdshader" id="2_lnvo3"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_anuew"]
+render_priority = 0
+shader = ExtResource("2_lnvo3")
+
+[sub_resource type="SphereMesh" id="SphereMesh_ywh3c"]
+material = SubResource("ShaderMaterial_anuew")
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_p7rmd"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_8yde6"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = false
+properties/0/sync = false
+properties/0/watch = false
+
+[node name="tail" type="Node3D"]
+script = ExtResource("1_ccipo")
+
+[node name="body" type="StaticBody3D" parent="."]
+collision_layer = 2
+
+[node name="mesh" type="MeshInstance3D" parent="body"]
+mesh = SubResource("SphereMesh_ywh3c")
+skeleton = NodePath("../..")
+
+[node name="shape" type="CollisionShape3D" parent="body"]
+shape = SubResource("SphereShape3D_p7rmd")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_8yde6")
+visibility_update_mode = 1

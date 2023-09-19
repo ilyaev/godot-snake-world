@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://d4fr2r1suq4x0"]
+
+[ext_resource type="Script" path="res://tails.gd" id="1_q78ad"]
+
+[node name="tails" type="Node3D"]
+script = ExtResource("1_q78ad")
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://tail.tscn")
+spawn_path = NodePath("..")
+
+[connection signal="spawned" from="MultiplayerSpawner" to="." method="_on_multiplayer_spawner_spawned"]
