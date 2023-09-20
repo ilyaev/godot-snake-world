@@ -9,6 +9,8 @@ shader = ExtResource("2_lnvo3")
 
 [sub_resource type="SphereMesh" id="SphereMesh_ywh3c"]
 material = SubResource("ShaderMaterial_anuew")
+radial_segments = 16
+rings = 8
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_p7rmd"]
 

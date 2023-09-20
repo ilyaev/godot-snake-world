@@ -1,11 +1,17 @@
-[gd_scene load_steps=7 format=3 uid="uid://b12yjbpb35r13"]
+[gd_scene load_steps=9 format=3 uid="uid://b12yjbpb35r13"]
 
 [ext_resource type="Script" path="res://player.gd" id="1_0asij"]
 [ext_resource type="PackedScene" uid="uid://d4fr2r1suq4x0" path="res://tails.tscn" id="2_du4yk"]
+[ext_resource type="Material" uid="uid://be651psig7ba5" path="res://m_player.tres" id="3_kfgl5"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_qgdxa"]
+material = ExtResource("3_kfgl5")
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_0tqjp"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_hgl5e"]
+radius = 0.15
+height = 0.3
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_8cunk"]
 properties/0/path = NodePath(".:alpha")
@@ -32,7 +38,6 @@ properties/1/sync = false
 properties/1/watch = true
 
 [node name="player" type="Node3D"]
-visible = false
 script = ExtResource("1_0asij")
 
 [node name="tails" parent="." instance=ExtResource("2_du4yk")]
@@ -41,11 +46,30 @@ script = ExtResource("1_0asij")
 collision_mask = 3
 
 [node name="head" type="MeshInstance3D" parent="body"]
+transform = Transform3D(-4.37114e-08, -1, 3.27752e-16, 0.939692, -4.10753e-08, -0.34202, 0.34202, -1.49502e-08, 0.939693, 0, 0, 0)
+cast_shadow = 0
 mesh = SubResource("SphereMesh_qgdxa")
 skeleton = NodePath("../..")
 
 [node name="shape" type="CollisionShape3D" parent="body"]
 shape = SubResource("SphereShape3D_0tqjp")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0154338, 2.08338)
+shadow_enabled = true
+shadow_opacity = 0.45
+omni_range = 7.0
+omni_attenuation = 0.0583149
+
+[node name="eye_left" type="MeshInstance3D" parent="body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.294069, 0.244985, 0.313646)
+visible = false
+mesh = SubResource("SphereMesh_hgl5e")
+
+[node name="eye_right" type="MeshInstance3D" parent="body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.27216, 0.235, 0.313646)
+visible = false
+mesh = SubResource("SphereMesh_hgl5e")
 
 [node name="MultiplayerSynchronizerRT" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_8cunk")

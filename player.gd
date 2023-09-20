@@ -19,14 +19,17 @@ var T_SPAWN = 0
 var T_AUTO = 0
 var elapsed = 0
 
+var seek_position = Vector3(0., 0., 0.)
+var seek_time = 0
+
 var search_next_target = true
 
 @export var aID = "0"
 
 func _enter_tree():
 	set_multiplayer_authority(name.to_int())
-	if name.to_int() == 1:
-		autopilot = true
+#	if name.to_int() == 1:
+#		autopilot = true
 	if is_multiplayer_authority():
 		init_position()
 		set_visible(true)
@@ -59,12 +62,13 @@ func _physics_process(delta):
 
 	direction.x = sin(alpha)
 	direction.y = cos(alpha)
+	
+	$body.basis = Basis().rotated(Vector3.FORWARD, alpha)
 
 	$body.position += direction * delta * speed
 	
 	if is_multiplayer_authority():
-		get_parent().camera.position.x = $body.position.x
-		get_parent().camera.position.y = $body.position.y
+		get_parent().sync_camera_position($body)
 
 	var collision : KinematicCollision3D = $body.move_and_collide(direction * delta * speed, true)
 
@@ -105,19 +109,27 @@ func spawn_tail():
 	tail.next_position = tail.next.position
 	tail.position = Vector3(tail.position)
 	$tails.add_child(tail, true)
+	seek_time = 0
 
 func init_position():
 	pos = Vector3(0, randf_range(-8,8), 0)
 	$body.position = pos
 	
 func do_autopilot(delta):
-	if next_alpha != 0 && abs(next_alpha - alpha) > .1:
-		alpha += (next_alpha - alpha) * .2
-	
-	if search_next_target || T_AUTO > 1:
-		T_AUTO = 0
-		for food in get_parent().get_children():
-			if food is Food:
-				next_alpha = (food.position - $body.position).signed_angle_to(Vector3.UP, Vector3.BACK)
-				search_next_target = false;
+	for food in get_parent().get_children():
+		if food is Food:
+			if seek_time > 5:
+				seek_time += delta
+				if seek_time > 8:
+					seek_time = 0
+				pass
+			else:
+				if seek_position != food.position:
+					seek_time = 0
+				else:
+					seek_time += delta
+				seek_position = food.position
+				var n_direction = direction.lerp(food.position - $body.position, delta * rotation_speed)
+				var n_angle = n_direction.signed_angle_to(Vector3.UP, Vector3.BACK)
+				alpha = n_angle
 				break

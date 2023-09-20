@@ -72,3 +72,7 @@ func spawn_food():
 	var one = food_scene.instantiate()
 	one.set_multiplayer_authority(1)
 	call_deferred("add_child", one, true)
+
+func sync_camera_position(body):
+#	$camera.position = Vector3(body.position.x, body.position.y, camera.position.z)
+	$camera.position = Vector3(min(6.2, max(-6.2, body.position.x)), min(20.5, max(-4, body.position.y)), camera.position.z)
