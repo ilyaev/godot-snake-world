@@ -4,8 +4,8 @@ class_name Food
 # Called when the node enters the scene tree for the first time.
 func _enter_tree():
 	if is_multiplayer_authority():
-		position.x = randi_range(-10, 10)
-		position.y = randi_range(-7, 7)
+		position.x = randi_range(-15, 15)
+		position.y = randi_range(-7, 25)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

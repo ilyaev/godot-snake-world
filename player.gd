@@ -28,8 +28,8 @@ var search_next_target = true
 
 func _enter_tree():
 	set_multiplayer_authority(name.to_int())
-#	if name.to_int() == 1:
-#		autopilot = true
+	if name.to_int() == 1:
+		autopilot = true
 	if is_multiplayer_authority():
 		init_position()
 		set_visible(true)
@@ -80,13 +80,15 @@ func _physics_process(delta):
 			else:
 				alpha = direction.bounce(collision.get_normal()).signed_angle_to(Vector3.UP, Vector3.BACK)
 				alpha += randf_range(-collision_mutation, collision_mutation)
+				seek_time = 8.1
 			if is_multiplayer_authority():
 				if collider.get_parent() is Food:
 					spawn_tail()
 					search_next_target = true
 					collider.get_parent().rpc("eaten")
 				else:
-					reset_tail()
+					if collider.get_parent() is Tail:
+						reset_tail()
 	
 func reset_tail():
 	var index = 0
@@ -118,9 +120,9 @@ func init_position():
 func do_autopilot(delta):
 	for food in get_parent().get_children():
 		if food is Food:
-			if seek_time > 5:
+			if seek_time > 4:
 				seek_time += delta
-				if seek_time > 8:
+				if seek_time > 10:
 					seek_time = 0
 				pass
 			else:
@@ -131,5 +133,5 @@ func do_autopilot(delta):
 				seek_position = food.position
 				var n_direction = direction.lerp(food.position - $body.position, delta * rotation_speed)
 				var n_angle = n_direction.signed_angle_to(Vector3.UP, Vector3.BACK)
-				alpha = n_angle
+				alpha = n_angle #\ + sin(elapsed)*(PI/2)*delta
 				break

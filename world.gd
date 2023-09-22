@@ -24,12 +24,12 @@ func _process(delta):
 	$fps.set_text("FPS " + str(Engine.get_frames_per_second()) + ' / Items: ' + str(get_child_count()))
 	if connected:
 		if multiplayer.is_server():
-			if T > 1:
+			if T > 2:
 				spawn_food()
 				T = 0
 			
 func _on_host_pressed():
-	var success = peer.create_server(4002)
+	var success = peer.create_server(4022)
 	
 	if success == OK:
 		multiplayer.multiplayer_peer = peer
@@ -50,12 +50,10 @@ func _init_server():
 func _add_player(id = 1):
 	var player = player_scene.instantiate()
 	player.name = str(id)
-#	print("Add Player:", get_type(), [id, player.get_head().position, player.pos, player.name])
 	call_deferred("add_child", player)
 	
 func _on_join_pressed():
-#	await get_tree().create_timer(2.0).timeout
-	peer.create_client("localhost", 4002)
+	peer.create_client("localhost", 4022)
 	multiplayer.multiplayer_peer = peer
 	mid = multiplayer.get_unique_id()
 	$label_type.set_text("CLIENT: " + str(mid))

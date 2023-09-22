@@ -1,9 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://dwvprvvbvj76u"]
+[gd_scene load_steps=6 format=3 uid="uid://dwvprvvbvj76u"]
 
 [ext_resource type="Script" path="res://world.gd" id="1_vqwva"]
 [ext_resource type="PackedScene" uid="uid://b12yjbpb35r13" path="res://player.tscn" id="1_wuilo"]
 [ext_resource type="PackedScene" uid="uid://cpmdjemslertf" path="res://walls.tscn" id="2_ntgv0"]
-[ext_resource type="Environment" uid="uid://cyob6fw6aa3w8" path="res://clear_sky.tres" id="2_o4txu"]
 [ext_resource type="PackedScene" uid="uid://bp0vus53jj43y" path="res://food.tscn" id="3_ve1vh"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_6md4k"]
@@ -14,13 +13,12 @@ script = ExtResource("1_vqwva")
 player_scene = ExtResource("1_wuilo")
 food_scene = ExtResource("3_ve1vh")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = ExtResource("2_o4txu")
-
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(-0.840985, -0.539856, 0.0360351, -0.344182, 0.585175, 0.734241, -0.417471, 0.605083, -0.677932, 0.957167, 0, 8.06103)
+[node name="light" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.840985, -0.539857, 0.0360349, -0.344182, 0.585175, 0.73424, -0.417471, 0.605083, -0.677933, 0.957167, 0, 8.06103)
+light_energy = 2.0
 light_indirect_energy = 3.262
 shadow_enabled = true
+sky_mode = 1
 
 [node name="camera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12.5537)

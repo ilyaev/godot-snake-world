@@ -1,5 +1,6 @@
 extends Node3D
 
+var T = 0
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -8,6 +9,7 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta):
+	T += delta
 	var next = get_parent().get_head()
 	var c = get_child_count()
 	for i in range(1, c):
