@@ -11,14 +11,5 @@ config_version=5
 [application]
 
 config/name="Snake World"
-run/main_scene="res://world.tscn"
-config/features=PackedStringArray("4.1", "Mobile")
-config/icon="res://icon.svg"
-
-[display]
-
-window/size/always_on_top=true
-
-[rendering]
-
-renderer/rendering_method="mobile"
+run/main_scene="res://multiplayer.tscn"
+config/features=PackedStringArray("4.1")

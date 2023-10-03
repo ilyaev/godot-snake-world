@@ -1,0 +1,30 @@
+[gd_scene load_steps=5 format=3 uid="uid://ifn8kobknj4c"]
+
+[ext_resource type="Shader" path="res://player.gdshader" id="1_26a52"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_g13my"]
+render_priority = 0
+shader = ExtResource("1_26a52")
+
+[sub_resource type="SphereMesh" id="SphereMesh_cohl6"]
+material = SubResource("ShaderMaterial_g13my")
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_yaxbt"]
+
+[node name="head" type="StaticBody3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(-4.37114e-08, -1, 2.85709e-16, 0.819152, -3.58063e-08, -0.573576, 0.573576, -2.50718e-08, 0.819152, 0, 0, 0)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_cohl6")
+skeleton = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_yaxbt")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0154338, 2.08338)
+shadow_enabled = true
+shadow_opacity = 0.45
+omni_range = 7.0
+omni_attenuation = 0.0583149

@@ -1,29 +1,25 @@
-[gd_scene load_steps=5 format=3 uid="uid://bp0vus53jj43y"]
+[gd_scene load_steps=5 format=3 uid="uid://de25d5ycqcqcb"]
 
-[ext_resource type="Script" path="res://food.gd" id="1_ttlsd"]
+[ext_resource type="Script" path="res://food.gd" id="1_oucij"]
 
-[sub_resource type="BoxMesh" id="BoxMesh_o0nup"]
+[sub_resource type="BoxMesh" id="BoxMesh_0vh48"]
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_t1xxh"]
-radius = 0.7
+[sub_resource type="BoxShape3D" id="BoxShape3D_ak4ok"]
 
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_fd5bs"]
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_3u2e1"]
 properties/0/path = NodePath(".:position")
 properties/0/spawn = true
 properties/0/sync = false
 properties/0/watch = false
 
-[node name="food" type="Node3D"]
-script = ExtResource("1_ttlsd")
+[node name="food" type="StaticBody3D"]
+script = ExtResource("1_oucij")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="."]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_0vh48")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
-mesh = SubResource("BoxMesh_o0nup")
-skeleton = NodePath("../..")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
-shape = SubResource("SphereShape3D_t1xxh")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_ak4ok")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
-replication_config = SubResource("SceneReplicationConfig_fd5bs")
+replication_config = SubResource("SceneReplicationConfig_3u2e1")

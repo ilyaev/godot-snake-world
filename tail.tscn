@@ -1,38 +1,33 @@
-[gd_scene load_steps=7 format=3 uid="uid://dmspla5shclwy"]
+[gd_scene load_steps=7 format=3 uid="uid://dv31p2ificvhl"]
 
-[ext_resource type="Script" path="res://tail.gd" id="1_ccipo"]
-[ext_resource type="Shader" path="res://tail.gdshader" id="2_lnvo3"]
+[ext_resource type="Script" path="res://tail.gd" id="1_5l5lk"]
+[ext_resource type="Shader" path="res://player.gdshader" id="2_7o30w"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_anuew"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_13jvh"]
 render_priority = 0
-shader = ExtResource("2_lnvo3")
+shader = ExtResource("2_7o30w")
 
-[sub_resource type="SphereMesh" id="SphereMesh_ywh3c"]
-material = SubResource("ShaderMaterial_anuew")
+[sub_resource type="SphereMesh" id="SphereMesh_au221"]
+material = SubResource("ShaderMaterial_13jvh")
 radial_segments = 16
 rings = 8
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_p7rmd"]
+[sub_resource type="SphereShape3D" id="SphereShape3D_02gfr"]
 
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_8yde6"]
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_c7ylw"]
 properties/0/path = NodePath(".:position")
-properties/0/spawn = false
+properties/0/spawn = true
 properties/0/sync = false
 properties/0/watch = false
 
-[node name="tail" type="Node3D"]
-script = ExtResource("1_ccipo")
+[node name="tail" type="StaticBody3D"]
+script = ExtResource("1_5l5lk")
 
-[node name="body" type="StaticBody3D" parent="."]
-collision_layer = 2
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_au221")
 
-[node name="mesh" type="MeshInstance3D" parent="body"]
-mesh = SubResource("SphereMesh_ywh3c")
-skeleton = NodePath("../..")
-
-[node name="shape" type="CollisionShape3D" parent="body"]
-shape = SubResource("SphereShape3D_p7rmd")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_02gfr")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
-replication_config = SubResource("SceneReplicationConfig_8yde6")
-visibility_update_mode = 1
+replication_config = SubResource("SceneReplicationConfig_c7ylw")
