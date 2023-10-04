@@ -6,7 +6,7 @@ extends MultiplayerSynchronizer
 
 func _ready():
 	# Only process for the local player
-	direction = randf_range(-PI, PI)
+#	direction = randf_range(-PI, PI)
 	set_process(get_multiplayer_authority() == multiplayer.get_unique_id())
 
 

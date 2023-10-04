@@ -1,8 +1,15 @@
-[gd_scene load_steps=5 format=3 uid="uid://de25d5ycqcqcb"]
+[gd_scene load_steps=10 format=3 uid="uid://de25d5ycqcqcb"]
 
 [ext_resource type="Script" path="res://food.gd" id="1_oucij"]
+[ext_resource type="Shader" path="res://food.gdshader" id="2_5r4bs"]
+[ext_resource type="Shader" path="res://food_core.gdshader" id="3_kpar3"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_njoke"]
+render_priority = 0
+shader = ExtResource("2_5r4bs")
 
 [sub_resource type="BoxMesh" id="BoxMesh_0vh48"]
+material = SubResource("ShaderMaterial_njoke")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ak4ok"]
 
@@ -12,10 +19,21 @@ properties/0/spawn = true
 properties/0/sync = false
 properties/0/watch = false
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wud30"]
+render_priority = 0
+shader = ExtResource("3_kpar3")
+
+[sub_resource type="SphereMesh" id="SphereMesh_i4f0p"]
+material = SubResource("ShaderMaterial_wud30")
+radius = 0.25
+height = 0.5
+radial_segments = 8
+rings = 4
+
 [node name="food" type="StaticBody3D"]
 script = ExtResource("1_oucij")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+[node name="MeshBox" type="MeshInstance3D" parent="."]
 mesh = SubResource("BoxMesh_0vh48")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
@@ -23,3 +41,7 @@ shape = SubResource("BoxShape3D_ak4ok")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_3u2e1")
+
+[node name="MeshCore" type="MeshInstance3D" parent="."]
+transform = Transform3D(-4.37114e-08, -3.48787e-16, -1, 3.48787e-16, 1, -3.48787e-16, 1, -3.48787e-16, -4.37114e-08, 0, 0, 0)
+mesh = SubResource("SphereMesh_i4f0p")

@@ -12,6 +12,8 @@ func _ready():
 #	pass
 
 func _physics_process(delta):
-	rotate_x(delta * PI/4)
-	rotate_y(delta * PI/2)
-	rotate_z(delta * PI/8)
+	$MeshBox.rotate_x(delta * PI/4)
+	$MeshBox.rotate_y(delta * PI/2)
+	$MeshBox.rotate_z(delta * PI/8)
+	
+	$MeshCore.rotate_y(delta * PI)

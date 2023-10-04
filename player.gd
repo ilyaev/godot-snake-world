@@ -34,6 +34,7 @@ var prev = Time.get_unix_time_from_system()
 var prev_pos = Vector3(0,0,0)
 var elapsed := 0.0
 var T_LAST_COLLIDED = 0.0
+var T_LAST_COLLIDED_OBJECT = null
 
 var seek_time = 0.0
 var seek_position = Vector3(0., 0., 0.)
@@ -77,18 +78,19 @@ func _physics_process(delta):
 	var collision : KinematicCollision3D = $Tails.get_child(1).move_and_collide(head_direction * delta * speed, true)
 
 	T_LAST_COLLIDED += delta
-
+	
 	if collision && is_multiplayer_authority():
 
 		var collider = collision.get_collider()
-#		if !collider is Tail:
+		
 		if collider is Food:
 			collider.queue_free()
 			spawn_tail()
 			get_parent().get_parent().spawn_food()
 		else:
-			if T_LAST_COLLIDED > .3:
+			if T_LAST_COLLIDED > .3 || T_LAST_COLLIDED_OBJECT != collider:
 				T_LAST_COLLIDED = 0
+				T_LAST_COLLIDED_OBJECT = collider
 				alpha = head_direction.bounce(collision.get_normal()).signed_angle_to(Vector3.UP, Vector3.BACK)
 				alpha += randf_range(-collision_mutation, collision_mutation)
 				$PlayerInput.rpc("update_direction", alpha)
@@ -137,9 +139,10 @@ func spawn_tail():
 		var next = $Tails.get_child($Tails.get_child_count() - 1)
 		tail.position = next.position
 	tail.name = "tail_" + str(player) + '_' + str(randi_range(100,10000))
+	tail.index = $Tails.get_child_count()
 	$Tails.add_child(tail, true)
-	if $Tails.get_child_count() < 4:
-		$Tails.get_child(1).add_collision_exception_with(tail)
+#	if $Tails.get_child_count() < 4:
+	$Tails.get_child(1).add_collision_exception_with(tail)
 	seek_time = 0
 
 func head_position():
@@ -162,8 +165,9 @@ func _on_server_synchronizer_synchronized():
 
 
 func _on_multiplayer_spawner_spawned(node):
-	if $Tails.get_child_count() < 4:
-		$Tails.get_child(1).add_collision_exception_with(node)
+#	if $Tails.get_child_count() < 4:
+	$Tails.get_child(1).add_collision_exception_with(node)
+	node.index = $Tails.get_child_count()
 
 func get_all_food():
 	return get_parent().get_parent().get_node('Objects').get_children()
@@ -176,6 +180,7 @@ func find_next_food():
 	seek_food = foods[randi_range(0, foods.size() - 1)]
 
 func do_autopilot(delta):
+	var T = Time.get_unix_time_from_system()
 	if seek_food == null || seek_food.is_queued_for_deletion() || seek_time > 5:
 		seek_time = 0.0
 		find_next_food()
@@ -183,5 +188,5 @@ func do_autopilot(delta):
 	seek_time += delta
 	seek_position = seek_food.position
 	var n_direction = direction.lerp(seek_food.position - $head.position, delta * $PlayerInput.rotation_speed)
-	var n_angle = n_direction.signed_angle_to(Vector3.UP, Vector3.BACK)
+	var n_angle = n_direction.signed_angle_to(Vector3.UP, Vector3.BACK) + sin(T * 7.) * PI*delta*2.
 	$PlayerInput.direction = n_angle
