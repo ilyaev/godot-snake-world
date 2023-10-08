@@ -16,10 +16,12 @@ var direction := Vector3(0.0,0.0,0.0)
 @export var pos := Vector3(0,0,0)
 @export var state_timestamp := Time.get_unix_time_from_system()
 @export var title := 'Robot'
-@export var autopilot := true
+@export var silot := false
 
 # Player synchronized input.
 @onready var input = $PlayerInput
+
+@export var autopilot := false
 
 var TAIL = preload("res://tail.tscn")
 var INTERPOLATION_INTERVAL = 0.1
@@ -46,13 +48,18 @@ func _ready():
 func _physics_process(delta):
 	elapsed += delta
 	var alpha = $PlayerInput.direction
+	
+	if elapsed > 1.:
+		set_visible(true)
+		$Label.set_visible(true)
 
 	direction.x = sin(alpha)
 	direction.y = cos(alpha)
 
-	$Tails.get_child(1).basis = Basis().rotated(Vector3.FORWARD, ($Tails.get_child(0).position - $Tails.get_child(1).position).signed_angle_to(Vector3.UP, Vector3.BACK))
+	$Tails.get_child(1).basis = Basis().rotated(Vector3.FORWARD, alpha)
+#	($Tails.get_child(0).position - $Tails.get_child(1).position).signed_angle_to(Vector3.UP, Vector3.BACK))
 
-	if is_multiplayer_authority() && autopilot == true:
+	if is_multiplayer_authority() && (player == 1 || autopilot == true):
 		do_autopilot(delta)
 
 
@@ -73,7 +80,6 @@ func _physics_process(delta):
 			else:
 				$head.position += direction * delta * speed
 
-#	var collision : KinematicCollision3D = $head.move_and_collide(direction * delta * speed, true)
 	var head_direction = ($Tails.get_child(0).position - $Tails.get_child(1).position).normalized()
 	var collision : KinematicCollision3D = $Tails.get_child(1).move_and_collide(head_direction * delta * speed, true)
 
@@ -100,7 +106,7 @@ func _physics_process(delta):
 	move_tails(delta)
 
 	T += delta
-	if is_multiplayer_authority() && T > S_TAIL && $Tails.get_child_count() < 10:
+	if is_multiplayer_authority() && T > S_TAIL && $Tails.get_child_count() < 4:
 		T = 0
 		spawn_tail()
 
@@ -108,10 +114,9 @@ func _physics_process(delta):
 	if $Tails.get_child_count() > 1:
 		orig = $Tails.get_child(1).global_transform.origin
 	var screen_pos = get_parent().get_parent().get_node("Camera").unproject_position(orig)
-#	$Label.set_text(str(player) + ':'+title)
 	$Label.set_text(title)
 	$Label.set_position(screen_pos)
-
+	
 	if $Tails.get_child_count() > 1:
 		emit_signal("change_position", $Tails.get_child(1).position)
 	else:
@@ -123,7 +128,7 @@ func move_tails(delta):
 	for i in range(0, c):
 		var tail = $Tails.get_child(i)
 		var d_to_tail = (next_position - tail.position).length()
-		if i < 2 or d_to_tail > 5.:
+		if i < 2 or d_to_tail > 1.:
 			d_to_tail = 1.
 		tail.position = tail.position + (next_position - tail.position) * delta * speed * (.9 - (1. - d_to_tail)*3.)
 		next_position = tail.position
@@ -131,17 +136,14 @@ func move_tails(delta):
 func spawn_tail():
 	if !multiplayer.is_server():
 		return
-	# if $Tails.get_child_count() > 10:
-	# 	return
 	var tail = TAIL.instantiate()
-	tail.position = pos
+#	tail.position = pos
 	if $Tails.get_child_count() > 1:
 		var next = $Tails.get_child($Tails.get_child_count() - 1)
 		tail.position = next.position
 	tail.name = "tail_" + str(player) + '_' + str(randi_range(100,10000))
 	tail.index = $Tails.get_child_count()
 	$Tails.add_child(tail, true)
-#	if $Tails.get_child_count() < 4:
 	$Tails.get_child(1).add_collision_exception_with(tail)
 	seek_time = 0
 
@@ -165,9 +167,11 @@ func _on_server_synchronizer_synchronized():
 
 
 func _on_multiplayer_spawner_spawned(node):
-#	if $Tails.get_child_count() < 4:
 	$Tails.get_child(1).add_collision_exception_with(node)
 	node.index = $Tails.get_child_count()
+#	if node.index == 3:
+#		$Tails.get_child(0).position = pos
+#		$Tails.get_child(1).position = pos
 
 func get_all_food():
 	return get_parent().get_parent().get_node('Objects').get_children()
@@ -180,7 +184,7 @@ func find_next_food():
 	seek_food = foods[randi_range(0, foods.size() - 1)]
 
 func do_autopilot(delta):
-	var T = Time.get_unix_time_from_system()
+	var TT = Time.get_unix_time_from_system()
 	if seek_food == null || seek_food.is_queued_for_deletion() || seek_time > 5:
 		seek_time = 0.0
 		find_next_food()
@@ -188,5 +192,5 @@ func do_autopilot(delta):
 	seek_time += delta
 	seek_position = seek_food.position
 	var n_direction = direction.lerp(seek_food.position - $head.position, delta * $PlayerInput.rotation_speed)
-	var n_angle = n_direction.signed_angle_to(Vector3.UP, Vector3.BACK) + sin(T * 7.) * PI*delta*2.
+	var n_angle = n_direction.signed_angle_to(Vector3.UP, Vector3.BACK) + sin(TT * 7.) * PI*delta*2.
 	$PlayerInput.direction = n_angle

@@ -52,7 +52,6 @@ func add_player(id: int):
 
 
 func sync_camera(p_pos):
-#	print('Sync Camera For: ', [multiplayer.get_unique_id(), p_pos])
 	$Camera.position.x = p_pos.x
 	$Camera.position.y = p_pos.y
 
@@ -65,18 +64,17 @@ func del_player(id: int):
 		return
 	$Players.get_node(str(id)).queue_free()
 
-# func _physics_process(delta):
-# 	T += delta
-# 	if T > 1.0:
-# 		T = 0.0
-# 		spawn_food()
-
 func spawn_food():
 	var food = food_scene.instantiate()
 	food.position = Vector3(randf_range(-15, 15),randf_range(-10, 10),0)
 	$Objects.add_child(food, true)
 
 func _on_players_spawner_spawned(node):
-	print('Spawn: ', [node.player, multiplayer.get_unique_id()])
+	print('Spawn: ', [node.player, multiplayer.get_unique_id(), node.pos, node.get_node('Tails').get_child_count()])
+	node.get_node('Tails').get_child(0).position = node.pos
+	node.get_node('Tails').get_child(1).position = node.pos
 	if node.player == multiplayer.get_unique_id():
 		node.change_position.connect(sync_camera)
+	else:
+		node.set_visible(false)
+		node.get_node('Label').set_visible(false)

@@ -2,7 +2,7 @@ extends MultiplayerSynchronizer
 
 # Synchronized property.
 @export var direction := PI/2.0
-@export var rotation_speed = 1.2
+@export var rotation_speed := 1.2
 
 func _ready():
 	# Only process for the local player
@@ -11,6 +11,16 @@ func _ready():
 
 
 func _process(delta):
+	if Input.is_action_pressed("ui_right"):
+		direction = PI/2.0
+	if Input.is_action_pressed("ui_left"):
+		direction = -PI/2.0
+	if Input.is_action_pressed("ui_up"):
+		direction = 0
+	if Input.is_action_pressed("ui_down"):
+		direction = PI
+
+func _process_leg(delta):
 	if Input.is_action_pressed("ui_right"):
 		direction += delta * PI * rotation_speed
 

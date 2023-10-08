@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://ifn8kobknj4c"]
+[gd_scene load_steps=6 format=3 uid="uid://ifn8kobknj4c"]
 
 [ext_resource type="Shader" path="res://player.gdshader" id="1_26a52"]
+[ext_resource type="Script" path="res://head.gd" id="1_o70qi"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_g13my"]
 render_priority = 0
@@ -12,6 +13,7 @@ material = SubResource("ShaderMaterial_g13my")
 [sub_resource type="SphereShape3D" id="SphereShape3D_yaxbt"]
 
 [node name="head" type="StaticBody3D"]
+script = ExtResource("1_o70qi")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(-4.37114e-08, -1, 2.85709e-16, 0.819152, -3.58063e-08, -0.573576, 0.573576, -2.50718e-08, 0.819152, 0, 0, 0)
