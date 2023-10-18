@@ -79,6 +79,23 @@ tracks/3/keys = {
 "update": 0,
 "values": [0.0]
 }
+tracks/4/type = "method"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath(".")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 0.9),
+"transitions": PackedFloat32Array(1, 1),
+"values": [{
+"args": [1],
+"method": &"move_to_tail"
+}, {
+"args": [2],
+"method": &"move_to_tail"
+}]
+}
 
 [sub_resource type="Animation" id="Animation_x1fkw"]
 resource_name = "fade"
@@ -159,3 +176,5 @@ replication_config = SubResource("SceneReplicationConfig_3u2e1")
 libraries = {
 "": SubResource("AnimationLibrary_lir18")
 }
+
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_animation_player_animation_finished"]

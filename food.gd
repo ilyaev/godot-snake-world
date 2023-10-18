@@ -2,20 +2,12 @@ extends StaticBody3D
 class_name Food
 
 var eaten := false
-
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
-
-
-## Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
+var multiplier := 1.0
 
 func _physics_process(delta):
-	var multiplier = 1
 	if eaten:
-		multiplier = 5
+		multiplier += delta * 6.
+
 	$MeshBox.rotate_x(delta * PI/4 * multiplier)
 	$MeshBox.rotate_y(delta * PI/2 * multiplier)
 	$MeshBox.rotate_z(delta * PI/8 * multiplier)
@@ -24,9 +16,13 @@ func _physics_process(delta):
 
 @rpc("any_peer", "call_local")
 func eat():
+	multiplier = 5.
 	remove_child($CollisionShape3D)
 	eaten = true
 	$AnimationPlayer.play("fade")
-	if multiplayer.is_server():
-		await get_tree().create_timer(1.).timeout
-		queue_free()
+		
+		
+func _on_animation_player_animation_finished(anim_name):
+	if anim_name == "fade":
+		if multiplayer.is_server():
+			queue_free()

@@ -6,3 +6,4 @@ class_name Tail
 
 func _ready():
 	$MeshInstance3D.set_instance_shader_parameter('index', float(index))
+	$AnimationPlayer.play("show")
