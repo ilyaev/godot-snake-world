@@ -1,35 +1,18 @@
 extends MultiplayerSynchronizer
 
-# Synchronized property.
-@export var direction := PI/2.0
-@export var rotation_speed := 1.2
+@export var direction := Vector3(1, 0, 0)
+@export var next_direction := Vector3(1, 0, 0)
 
 func _ready():
-	# Only process for the local player
-#	direction = randf_range(-PI, PI)
 	set_process(get_multiplayer_authority() == multiplayer.get_unique_id())
-
 
 func _process(delta):
 	if Input.is_action_pressed("ui_right"):
-		direction = PI/2.0
+		next_direction = Vector3(1, 0, 0)
 	if Input.is_action_pressed("ui_left"):
-		direction = -PI/2.0
+		next_direction = Vector3(-1, 0, 0)
 	if Input.is_action_pressed("ui_up"):
-		direction = 0
+		next_direction = Vector3(0, 1, 0)
 	if Input.is_action_pressed("ui_down"):
-		direction = PI
-
-func _process_leg(delta):
-	if Input.is_action_pressed("ui_right"):
-		direction += delta * PI * rotation_speed
-
-	if Input.is_action_pressed("ui_left"):
-		direction -= delta * PI * rotation_speed
-
-	if Input.is_action_pressed("ui_up"):
-		get_parent().autopilot = !get_parent().autopilot
-
-@rpc("reliable", "call_local", "any_peer")
-func update_direction(new_direction):
-	direction = new_direction
+		next_direction = Vector3(0, -1, 0)
+	direction = next_direction

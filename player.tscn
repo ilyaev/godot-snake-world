@@ -2,43 +2,37 @@
 
 [ext_resource type="Script" path="res://player.gd" id="1_hwwnj"]
 [ext_resource type="Script" path="res://player_input.gd" id="2_ju3m6"]
-[ext_resource type="PackedScene" uid="uid://ifn8kobknj4c" path="res://head.tscn" id="3_kfa4g"]
-[ext_resource type="PackedScene" uid="uid://dv31p2ificvhl" path="res://tail.tscn" id="4_xfayd"]
+[ext_resource type="Shader" path="res://player.gdshader" id="3_3onv1"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_fb1vy"]
 properties/0/path = NodePath(".:player")
 properties/0/spawn = true
-properties/0/sync = false
-properties/0/watch = false
-properties/1/path = NodePath(".:state_timestamp")
-properties/1/spawn = false
-properties/1/sync = false
-properties/1/watch = false
-properties/2/path = NodePath(".:pos")
+properties/0/replication_mode = 0
+properties/1/path = NodePath(".:pos")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:state_timestamp")
 properties/2/spawn = true
-properties/2/sync = true
-properties/2/watch = true
-properties/3/path = NodePath(".:title")
-properties/3/spawn = true
-properties/3/sync = false
-properties/3/watch = false
+properties/2/replication_mode = 1
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_hoavk"]
 properties/0/path = NodePath(".:direction")
 properties/0/spawn = true
-properties/0/sync = false
-properties/0/watch = true
+properties/0/replication_mode = 2
 
 [sub_resource type="LabelSettings" id="LabelSettings_kj3q0"]
 font_size = 48
 outline_size = 3
 outline_color = Color(1, 0.658824, 0.266667, 1)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sn8fw"]
-albedo_color = Color(1, 0.0313726, 1, 1)
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5xj1i"]
+render_priority = 0
+shader = ExtResource("3_3onv1")
 
-[sub_resource type="SphereMesh" id="SphereMesh_h8ffw"]
-material = SubResource("StandardMaterial3D_sn8fw")
+[sub_resource type="SphereMesh" id="SphereMesh_bnoqe"]
+material = SubResource("ShaderMaterial_5xj1i")
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_or4fo"]
 
 [node name="Player" type="Node3D"]
 script = ExtResource("1_hwwnj")
@@ -53,26 +47,26 @@ root_path = NodePath(".")
 replication_config = SubResource("SceneReplicationConfig_hoavk")
 script = ExtResource("2_ju3m6")
 
-[node name="Tails" type="Node3D" parent="."]
-
-[node name="tail" parent="Tails" instance=ExtResource("4_xfayd")]
-visible = false
-
-[node name="head" parent="Tails" instance=ExtResource("3_kfa4g")]
-
-[node name="TailSpawner" type="MultiplayerSpawner" parent="."]
-_spawnable_scenes = PackedStringArray("res://tail.tscn")
-spawn_path = NodePath("../Tails")
-
 [node name="Label" type="Label" parent="."]
 offset_right = 40.0
 offset_bottom = 23.0
 text = "SNAKE"
 label_settings = SubResource("LabelSettings_kj3q0")
 
-[node name="head" type="MeshInstance3D" parent="."]
-visible = false
-mesh = SubResource("SphereMesh_h8ffw")
+[node name="Tails" type="Node3D" parent="."]
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://tail.tscn")
+spawn_path = NodePath("../Tails")
+
+[node name="head" type="StaticBody3D" parent="."]
+
+[node name="mesh" type="MeshInstance3D" parent="head"]
+mesh = SubResource("SphereMesh_bnoqe")
+skeleton = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="head"]
+shape = SubResource("SphereShape3D_or4fo")
 
 [connection signal="synchronized" from="ServerSynchronizer" to="." method="_on_server_synchronizer_synchronized"]
-[connection signal="spawned" from="TailSpawner" to="." method="_on_multiplayer_spawner_spawned"]
+[connection signal="spawned" from="MultiplayerSpawner" to="." method="_on_multiplayer_spawner_spawned"]

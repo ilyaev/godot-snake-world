@@ -8,12 +8,12 @@ func _ready():
 	# Start paused
 	get_tree().paused = true
 	# You can save bandwith by disabling server relay and peer notifications.
-	multiplayer.server_relay = false
+	#multiplayer.server_relay = false
 
 	# Automatically start the server in headless mode.
 #	if DisplayServer.get_name() == "headless" :
 	print("Automatically starting dedicated server")
-	_on_host_pressed.call_deferred()
+	Callable(_on_host_pressed).call_deferred()
 
 
 func _on_host_pressed():
@@ -21,7 +21,7 @@ func _on_host_pressed():
 	var peer = ENetMultiplayerPeer.new()
 	var result = peer.create_server(PORT)
 	if result != OK:
-		await get_tree().create_timer(randf_range(1.0, 3.0)).timeout
+		#await get_tree().create_timer(randf_range(3.0, 10.0)).timeout
 		_on_connect_pressed()
 		return result
 	if peer.get_connection_status() == MultiplayerPeer.CONNECTION_DISCONNECTED:
@@ -29,6 +29,7 @@ func _on_host_pressed():
 		return 20
 	multiplayer.multiplayer_peer = peer
 	start_game()
+	get_window().position = Vector2(1150, 0)
 	return result
 
 
@@ -53,7 +54,7 @@ func start_game():
 	# Only change level on the server.
 	# Clients will instantiate the level via the spawner.
 	if multiplayer.is_server():
-		change_level.call_deferred(level_scene)
+		Callable(change_level).call_deferred(level_scene)
 
 
 # Call this function deferred and only on the main authority (server).
@@ -64,7 +65,8 @@ func change_level(scene: PackedScene):
 		level.remove_child(c)
 		c.queue_free()
 	# Add new level.
-	level.add_child(scene.instantiate())
+	Callable(level.add_child).call_deferred(scene.instantiate())
+	#level.add_child(scene.instantiate())
 
 # The server can restart the level by pressing HOME.
 func _input(event):

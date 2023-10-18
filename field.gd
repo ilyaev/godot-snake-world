@@ -5,11 +5,13 @@ const SPAWN_RANDOM := 10.0
 var T := 0.0
 
 @export var player_scene : PackedScene
-@export var food_scene : PackedScene
 
 func _ready():
 	# We only need to spawn players on the server.
 	set_physics_process(multiplayer.is_server())
+	
+	# Connect camera to player position
+	Events.connect("player_position", func (pos): $Camera.position = Vector3(pos.x, pos.y, $Camera.position.z))
 
 	if not multiplayer.is_server():
 		return
@@ -21,16 +23,24 @@ func _ready():
 	for id in multiplayer.get_peers():
 		add_player(id)
 
-	# Spawn random food
-	for i in 5:
-		spawn_food()
-
 	# Spawn the local player unless this is a dedicated server export.
 	if not OS.has_feature("dedicated_server"):
 		add_player(1)
+	
+	
+func _physics_process(delta):
+	T += delta
+	manage_food(delta)
+	
+func manage_food(delta):
+	if T > 2 and $Objects.get_child_count() < $Players.get_child_count() * 3:
+		T = 0
+		spawn_food()
 
-
-
+func spawn_food():
+	var food = preload("res://food.tscn").instantiate()
+	food.position = Vector3(randf_range(-15, 15),randf_range(-10, 10),.8)
+	Callable($Objects.add_child).call_deferred(food, true)
 
 func _exit_tree():
 	if not multiplayer.is_server():
@@ -42,39 +52,20 @@ func _exit_tree():
 func add_player(id: int):
 	var character = player_scene.instantiate()
 	character.player = id
-	character.sync_position(Vector3(randf_range(-8, 8), randf_range(-8,8), 0))
 	character.name = str(id)
-	character.title = get_random_name()
-	print('Add Player', [id, multiplayer.get_unique_id()])
-	if id == multiplayer.get_unique_id():
-		character.change_position.connect(sync_camera)
-	$Players.add_child(character, true)
+	character.index = $Players.get_child_count()
+	if id != 1:
+		var pos = Vector3(-5 + 2 * $Players.get_child_count(), 3 * $Players.get_child_count(), 0)
+		character.pos = pos
+		character.get_node('head').position = pos
+	Callable($Players.add_child).call_deferred(character, true)
 
-
-func sync_camera(p_pos):
-	$Camera.position.x = p_pos.x
-	$Camera.position.y = p_pos.y
-
-func get_random_name():
-	var names = $Names.get_text().split("\n")
-	return names[randi_range(0, names.size() - 1)]
 
 func del_player(id: int):
 	if not $Players.has_node(str(id)):
 		return
 	$Players.get_node(str(id)).queue_free()
 
-func spawn_food():
-	var food = food_scene.instantiate()
-	food.position = Vector3(randf_range(-15, 15),randf_range(-10, 10),0)
-	$Objects.add_child(food, true)
 
 func _on_players_spawner_spawned(node):
-	print('Spawn: ', [node.player, multiplayer.get_unique_id(), node.pos, node.get_node('Tails').get_child_count()])
-	node.get_node('Tails').get_child(0).position = node.pos
-	node.get_node('Tails').get_child(1).position = node.pos
-	if node.player == multiplayer.get_unique_id():
-		node.change_position.connect(sync_camera)
-	else:
-		node.set_visible(false)
-		node.get_node('Label').set_visible(false)
+	node.get_node('head').position = node.pos

@@ -12,4 +12,8 @@ config_version=5
 
 config/name="Snake World"
 run/main_scene="res://multiplayer.tscn"
-config/features=PackedStringArray("4.1")
+config/features=PackedStringArray("4.2")
+
+[autoload]
+
+Events="*res://events.gd"
