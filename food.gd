@@ -4,6 +4,9 @@ class_name Food
 var eaten := false
 var multiplier := 1.0
 
+func _ready():
+	$AnimationPlayer.play("show")
+
 func _physics_process(delta):
 	if eaten:
 		multiplier += delta * 6.

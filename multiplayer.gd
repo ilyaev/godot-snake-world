@@ -29,7 +29,7 @@ func _on_host_pressed():
 		return 20
 	multiplayer.multiplayer_peer = peer
 	start_game()
-	get_window().position = Vector2(1150, 0)
+	# get_window().position = Vector2(1150, 0)
 	return result
 
 

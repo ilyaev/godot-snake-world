@@ -35,7 +35,7 @@ func _physics_process(delta):
 		player_process(delta)
 
 
-func player_process(delta):
+func player_process(_delta):
 	Events.emit_signal("player_position", $head.position)
 
 func server_process(delta):

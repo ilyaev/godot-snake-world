@@ -25,7 +25,7 @@ vec3 draw_background(vec2 cuv, float T, float cells) {
 }
 
 void fragment() {
-	float size = 17.1;
+	float size = 20.;
 	
 	vec2 uv = fract(UV*size);
 	vec2 id = floor(UV*size);

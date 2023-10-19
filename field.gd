@@ -12,6 +12,8 @@ func _ready():
 	
 	# Connect camera to player position
 	Events.connect("player_position", func (pos): $Camera.position = Vector3(pos.x, pos.y, $Camera.position.z))
+	$screen.show()
+	$screen/AnimationPlayer.play("fade")
 
 	if not multiplayer.is_server():
 		return
@@ -32,14 +34,14 @@ func _physics_process(delta):
 	T += delta
 	manage_food(delta)
 	
-func manage_food(delta):
+func manage_food(_delta):
 	if T > 2 and $Objects.get_child_count() < $Players.get_child_count() * 3:
 		T = 0
 		spawn_food()
 
 func spawn_food():
 	var food = preload("res://food.tscn").instantiate()
-	food.position = Vector3(randf_range(-15, 15),randf_range(-10, 10),.8)
+	food.position = Vector3(randi_range(-8, 8) * 2 + 1,randi_range(-8, 8) * 2 + 1,.8)
 	Callable($Objects.add_child).call_deferred(food, true)
 
 func _exit_tree():
@@ -55,7 +57,7 @@ func add_player(id: int):
 	character.name = str(id)
 	character.index = $Players.get_child_count()
 	if id != 1:
-		var pos = Vector3(-5 + 2 * $Players.get_child_count(), 3 * $Players.get_child_count(), 0)
+		var pos = Vector3(randi_range(-SPAWN_RANDOM, SPAWN_RANDOM), randi_range(-SPAWN_RANDOM, SPAWN_RANDOM), 0)
 		character.pos = pos
 		character.get_node('head').position = pos
 	Callable($Players.add_child).call_deferred(character, true)
@@ -69,3 +71,7 @@ func del_player(id: int):
 
 func _on_players_spawner_spawned(node):
 	node.get_node('head').position = node.pos
+
+
+func _on_animation_player_animation_finished(_anim_name):
+	remove_child($screen)
