@@ -11,9 +11,9 @@ func _ready():
 	#multiplayer.server_relay = false
 
 	# Automatically start the server in headless mode.
-#	if DisplayServer.get_name() == "headless" :
-	print("Automatically starting dedicated server")
-	Callable(_on_host_pressed).call_deferred()
+	if DisplayServer.get_name() == "headless" or 1 == 1:
+		print("Automatically starting dedicated server")
+		Callable(_on_host_pressed).call_deferred()
 
 
 func _on_host_pressed():

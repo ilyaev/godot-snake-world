@@ -1,6 +1,8 @@
 extends Node3D
+class_name Player
 
 signal change_position
+signal change_cell
 
 var SPEED := 6.
 var INTERPOLATION_INTERVAL = 0.1
@@ -13,6 +15,9 @@ var last_state := Time.get_unix_time_from_system()
 var state_buffer := []
 
 var first_head = null
+var slate_color : Color = Color(1., 1., 1.)
+
+var cell_pos = Vector2(0, 0)
 
 @export var state_timestamp := Time.get_unix_time_from_system()
 @export var pos := Vector3(0,0,0)
@@ -23,37 +28,61 @@ var first_head = null
 
 func _physics_process(delta):
 	pre_process(delta)
-	
+
 	if is_multiplayer_authority():
 		server_process(delta)
 	else:
 		client_process()
 
 	move_tails(delta)
-	
+
 	if player == multiplayer.get_unique_id():
 		player_process(delta)
 
-
-func player_process(_delta):
-	Events.emit_signal("player_position", $head.position)
 
 func server_process(delta):
 	state_timestamp = Time.get_unix_time_from_system()
 	$head.position += $PlayerInput.direction.normalized() * delta * SPEED
 	pos = $head.position
 	collision_detection(delta)
+	var new_cell_pos = Vector2(floor((pos.x)/2), floor((pos.y)/2))
+	if new_cell_pos.x != cell_pos.x || new_cell_pos.y != cell_pos.y:
+		change_cell.emit(new_cell_pos, self)
+		on_cell_change(new_cell_pos)
+	cell_pos = new_cell_pos
 	spawn_control()
+
+func client_process():
+	if state_buffer.size() > 1:
+		var render_time = Time.get_unix_time_from_system() - INTERPOLATION_INTERVAL
+		while state_buffer.size() > 2 and render_time > state_buffer[1]["T"]:
+			state_buffer.remove_at(0)
+		var interpolation_factor = float(render_time - state_buffer[0]["T"]) / float(state_buffer[1]["T"] - state_buffer[0]["T"])
+		var new_position = lerp(state_buffer[0]["P"], state_buffer[1]["P"], interpolation_factor)
+		if render_time > state_buffer[0]["T"]:
+			$head.position = new_position
+	else:
+		$head.position = pos
+
+
+func player_process(_delta):
+	Events.PLAYER_POSITION.emit($head.position)
 
 func collision_detection(delta):
 	var head_direction = $PlayerInput.direction.normalized()
 	var collision : KinematicCollision3D = $head.move_and_collide(head_direction * delta * SPEED*1.1, true)
 	if collision:
 		var collider = collision.get_collider()
-		if collider is Food:
-			spawn_tail()
+		if collider is Food && get_state() != 'PlayerCarrySlate':
 			collider.rpc("eat")
-		else:
+			if collider.type == 'food':
+				set_state("PlayerNormal")
+				#spawn_tail()
+				trim_tail()
+			else:
+				rpc("set_slate_color", collider.color)
+				set_state('PlayerCarrySlate')
+		elif !(collider is Food):
 			var bounced = head_direction.bounce(collision.get_normal()).rotated(Vector3.BACK, randf_range(-PI/8, PI/8))
 			$PlayerInput.direction = Vector3(bounced.x, bounced.y, 0)
 			$PlayerInput.next_direction = $PlayerInput.direction
@@ -62,9 +91,9 @@ func collision_detection(delta):
 func pre_process(delta):
 	T += delta
 	elapsed += delta
-	
+
 	$Label.set_text(str(multiplayer.get_unique_id()))
-	
+
 	# Rotate head toward direction
 	var direction = $PlayerInput.direction
 	if !first_head:
@@ -81,18 +110,6 @@ func spawn_control():
 		T = 0
 		spawn_tail()
 
-func client_process():
-	if state_buffer.size() > 1:
-		var render_time = Time.get_unix_time_from_system() - INTERPOLATION_INTERVAL
-		while state_buffer.size() > 2 and render_time > state_buffer[1]["T"]:
-			state_buffer.remove_at(0)
-		var interpolation_factor = float(render_time - state_buffer[0]["T"]) / float(state_buffer[1]["T"] - state_buffer[0]["T"])
-		var new_position = lerp(state_buffer[0]["P"], state_buffer[1]["P"], interpolation_factor)
-		if render_time > state_buffer[0]["T"]:
-			$head.position = new_position
-	else:
-		$head.position = pos
-	
 func get_tails():
 	var sorted = $Tails.get_children()
 	sorted.sort_custom(func(a, b): return a.index < b.index)
@@ -111,9 +128,11 @@ func move_tails(delta):
 		t_pos = tail.position
 
 
+func trim_tail():
+	if $Tails.get_child_count() > 3:
+		$Tails.get_child($Tails.get_child_count() - 1).despawn()
+
 func spawn_tail():
-	if $Tails.get_child_count() > 70:
-		return
 	var tail = preload("res://tail.tscn").instantiate()
 	var t_pos = pos
 
@@ -136,3 +155,21 @@ func _on_multiplayer_spawner_spawned(node):
 	if elapsed > 2.:
 		var sorted = get_tails()
 		node.position = sorted[sorted.size() - 2].position
+
+func set_state(state_name : String):
+	rpc("rpc_set_state", state_name)
+
+func get_state():
+	return $StateMachine.current_state.name
+
+@rpc("any_peer", "call_local")
+func set_slate_color(color : Color):
+	slate_color = color
+
+@rpc("any_peer", "call_local")
+func rpc_set_state(state_name : String):
+	$StateMachine.transit(state_name)
+
+func on_cell_change(new_cell_pos):
+	pass
+	#print([cell_pos, new_cell_pos])

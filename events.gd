@@ -1,3 +1,3 @@
 extends Node
 
-signal player_position
+signal PLAYER_POSITION(pos)

@@ -1,0 +1,34 @@
+[gd_scene load_steps=6 format=3 uid="uid://dtt15xrvdmduw"]
+
+[ext_resource type="Shader" path="res://slate.gdshader" id="1_45p8u"]
+[ext_resource type="Script" path="res://slate.gd" id="1_ldu3i"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_po8ww"]
+render_priority = 0
+shader = ExtResource("1_45p8u")
+
+[sub_resource type="QuadMesh" id="QuadMesh_yi1hh"]
+material = SubResource("ShaderMaterial_po8ww")
+size = Vector2(1.93, 1.93)
+center_offset = Vector3(2.08165e-12, 2.08165e-12, 2.08165e-12)
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_fttkh"]
+properties/0/path = NodePath(".:x")
+properties/0/spawn = true
+properties/0/replication_mode = 0
+properties/1/path = NodePath(".:y")
+properties/1/spawn = true
+properties/1/replication_mode = 0
+properties/2/path = NodePath(".:color")
+properties/2/spawn = true
+properties/2/replication_mode = 0
+
+[node name="slate" type="MeshInstance3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.07, 0.93, 0.001)
+instance_shader_parameters/color = Color(0.933333, 0, 0, 1)
+mesh = SubResource("QuadMesh_yi1hh")
+script = ExtResource("1_ldu3i")
+color = Color(0.933333, 0, 0, 1)
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_fttkh")

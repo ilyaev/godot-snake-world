@@ -1,8 +1,12 @@
-[gd_scene load_steps=10 format=3 uid="uid://cw8w6clmxedi6"]
+[gd_scene load_steps=16 format=3 uid="uid://cw8w6clmxedi6"]
 
 [ext_resource type="Script" path="res://player.gd" id="1_hwwnj"]
 [ext_resource type="Script" path="res://player_input.gd" id="2_ju3m6"]
 [ext_resource type="Shader" path="res://player.gdshader" id="3_3onv1"]
+[ext_resource type="Shader" path="res://food_slate.gdshader" id="4_jc8lf"]
+[ext_resource type="Script" path="res://states/state_machine.gd" id="5_g8531"]
+[ext_resource type="Script" path="res://states/player_normal.gd" id="6_pmonf"]
+[ext_resource type="Script" path="res://states/player_carry_slate.gd" id="7_ptnik"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_fb1vy"]
 properties/0/path = NodePath(".:player")
@@ -36,6 +40,14 @@ shader = ExtResource("3_3onv1")
 material = SubResource("ShaderMaterial_5xj1i")
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_or4fo"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pp5e7"]
+render_priority = 0
+shader = ExtResource("4_jc8lf")
+
+[sub_resource type="BoxMesh" id="BoxMesh_xtgu3"]
+material = SubResource("ShaderMaterial_pp5e7")
+size = Vector3(0.9, 0.9, 0.9)
 
 [node name="Player" type="Node3D"]
 script = ExtResource("1_hwwnj")
@@ -78,6 +90,22 @@ light_energy = 3.0
 shadow_enabled = true
 spot_range = 9.80088
 spot_angle = 62.1227
+
+[node name="slate" type="MeshInstance3D" parent="head"]
+transform = Transform3D(0.853553, -0.146447, 0.5, 0.5, 0.5, -0.707107, -0.146447, 0.853553, 0.5, 1.02913, -0.0188869, 0.00545347)
+mesh = SubResource("BoxMesh_xtgu3")
+
+[node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
+script = ExtResource("5_g8531")
+initial_state = NodePath("PlayerNormal")
+
+[node name="PlayerNormal" type="Node" parent="StateMachine" node_paths=PackedStringArray("player")]
+script = ExtResource("6_pmonf")
+player = NodePath("../..")
+
+[node name="PlayerCarrySlate" type="Node" parent="StateMachine" node_paths=PackedStringArray("player")]
+script = ExtResource("7_ptnik")
+player = NodePath("../..")
 
 [connection signal="synchronized" from="ServerSynchronizer" to="." method="_on_server_synchronizer_synchronized"]
 [connection signal="spawned" from="MultiplayerSpawner" to="." method="_on_multiplayer_spawner_spawned"]

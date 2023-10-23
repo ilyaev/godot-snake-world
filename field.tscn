@@ -1,12 +1,14 @@
-[gd_scene load_steps=15 format=3 uid="uid://b1psoaww4dkmv"]
+[gd_scene load_steps=16 format=3 uid="uid://b1psoaww4dkmv"]
 
 [ext_resource type="Script" path="res://field.gd" id="1_a1q4k"]
 [ext_resource type="PackedScene" uid="uid://cw8w6clmxedi6" path="res://player.tscn" id="2_yh3il"]
 [ext_resource type="Shader" path="res://board.gdshader" id="3_6dudo"]
+[ext_resource type="Texture2D" uid="uid://bd0ewd5v5stm8" path="res://levels/level1.png" id="5_1rdm2"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_x2atr"]
 render_priority = 0
 shader = ExtResource("3_6dudo")
+shader_parameter/noise = ExtResource("5_1rdm2")
 
 [sub_resource type="QuadMesh" id="QuadMesh_ylyq7"]
 material = SubResource("ShaderMaterial_x2atr")
@@ -74,6 +76,8 @@ _data = {
 [node name="World" type="Node3D"]
 script = ExtResource("1_a1q4k")
 player_scene = ExtResource("2_yh3il")
+slate_colors = Array[Color]([Color(0.596078, 0, 0, 1), Color(0, 0.721569, 0, 1), Color(0, 0, 0.980392, 1)])
+noise_texture = ExtResource("5_1rdm2")
 metadata/dimension = Vector2(0, 0)
 
 [node name="Players" type="Node3D" parent="."]
@@ -139,15 +143,14 @@ mesh = SubResource("BoxMesh_ir1tk")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="board/Right"]
 shape = SubResource("BoxShape3D_apf7b")
 
-[node name="Objects" type="Node3D" parent="."]
-
 [node name="ObjectsSpawner" type="MultiplayerSpawner" parent="."]
-_spawnable_scenes = PackedStringArray("res://food.tscn")
+_spawnable_scenes = PackedStringArray("res://food.tscn", "res://slate.tscn")
 spawn_path = NodePath("../Objects")
+
+[node name="Objects" type="Node3D" parent="."]
 
 [node name="screen" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.2271)
-visible = false
 cast_shadow = 0
 gi_mode = 0
 mesh = SubResource("QuadMesh_3h23r")
