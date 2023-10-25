@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://cw8w6clmxedi6"]
+[gd_scene load_steps=17 format=3 uid="uid://cw8w6clmxedi6"]
 
 [ext_resource type="Script" path="res://player.gd" id="1_hwwnj"]
 [ext_resource type="Script" path="res://player_input.gd" id="2_ju3m6"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://states/state_machine.gd" id="5_g8531"]
 [ext_resource type="Script" path="res://states/player_normal.gd" id="6_pmonf"]
 [ext_resource type="Script" path="res://states/player_carry_slate.gd" id="7_ptnik"]
+[ext_resource type="Script" path="res://states/player_eliminated.gd" id="8_h3p41"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_fb1vy"]
 properties/0/path = NodePath(".:player")
@@ -105,6 +106,10 @@ player = NodePath("../..")
 
 [node name="PlayerCarrySlate" type="Node" parent="StateMachine" node_paths=PackedStringArray("player")]
 script = ExtResource("7_ptnik")
+player = NodePath("../..")
+
+[node name="PlayerEliminated" type="Node" parent="StateMachine" node_paths=PackedStringArray("player")]
+script = ExtResource("8_h3p41")
 player = NodePath("../..")
 
 [connection signal="synchronized" from="ServerSynchronizer" to="." method="_on_server_synchronizer_synchronized"]

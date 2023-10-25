@@ -94,6 +94,7 @@ func add_player(id: int):
 		character.get_node('head').position = pos
 	if multiplayer.is_server():
 		character.change_cell.connect(on_player_cell_change)
+		character.change_state.connect(on_player_state_change)
 	Callable($Players.add_child).call_deferred(character, true)
 
 
@@ -113,25 +114,31 @@ func get_nearest_same_color(pos : Vector2, color : Color, list : Dictionary):
 					list[key] = true
 					list = get_nearest_same_color(Vector2(x,y), color, list)	
 	return list
-				
+		
+		
+func on_player_state_change(state : String, current_state : String, player : Player):
+	print([player.player, current_state + ' -> ' + state])				
 
 func on_player_cell_change(cell_pos, player):
 	if !multiplayer.is_server():
 		return
 	var is_empty = is_board_empty(cell_pos)
-	if is_empty && player.get_state() == 'PlayerCarrySlate':
-		var slate = preload("res://slate.tscn").instantiate()
-		slate.x = cell_pos.x
-		slate.y = cell_pos.y
-		slate.color = player.slate_color
-		$Objects.add_child(slate, true)
-		player.set_state("PlayerNormal")
-		var key = get_cell_key(cell_pos)
-		empty_map[key] = false
-		color_map[key] = slate.color
-		var score = get_nearest_same_color(cell_pos, slate.color, {}).size()
-		for i in range(0, score):
-			player.spawn_tail()
+	if is_empty:
+		if player.get_state() == 'PlayerCarrySlate':
+			var slate = preload("res://slate.tscn").instantiate()
+			slate.x = cell_pos.x
+			slate.y = cell_pos.y
+			slate.color = player.slate_color
+			$Objects.add_child(slate, true)
+			player.set_state("PlayerNormal")
+			var key = get_cell_key(cell_pos)
+			empty_map[key] = false
+			color_map[key] = slate.color
+			var score = get_nearest_same_color(cell_pos, slate.color, {}).size()
+			for i in range(0, score):
+				player.spawn_tail()
+		else:
+			player.set_state("PlayerEliminated")
 		
 		
 

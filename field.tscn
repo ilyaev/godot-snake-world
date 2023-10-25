@@ -1,9 +1,10 @@
-[gd_scene load_steps=16 format=3 uid="uid://b1psoaww4dkmv"]
+[gd_scene load_steps=17 format=3 uid="uid://b1psoaww4dkmv"]
 
 [ext_resource type="Script" path="res://field.gd" id="1_a1q4k"]
 [ext_resource type="PackedScene" uid="uid://cw8w6clmxedi6" path="res://player.tscn" id="2_yh3il"]
 [ext_resource type="Shader" path="res://board.gdshader" id="3_6dudo"]
 [ext_resource type="Texture2D" uid="uid://bd0ewd5v5stm8" path="res://levels/level1.png" id="5_1rdm2"]
+[ext_resource type="Script" path="res://states/state_machine.gd" id="5_8eoi3"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_x2atr"]
 render_priority = 0
@@ -159,6 +160,10 @@ mesh = SubResource("QuadMesh_3h23r")
 libraries = {
 "": SubResource("AnimationLibrary_w8csh")
 }
+
+[node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
+script = ExtResource("5_8eoi3")
+initial_state = NodePath("")
 
 [connection signal="spawned" from="PlayersSpawner" to="." method="_on_players_spawner_spawned"]
 [connection signal="animation_finished" from="screen/AnimationPlayer" to="." method="_on_animation_player_animation_finished"]

@@ -3,6 +3,8 @@ extends Node
 var current_state : State = null
 var states : Dictionary = {}
 
+signal Transitioned(state : String, current_state : String)
+
 @export var initial_state : State
 
 func _ready():
@@ -32,6 +34,8 @@ func on_child_transition(state, new_state_name):
 	var new_state = states[new_state_name]
 	if !new_state:
 		return
+		
+	Transitioned.emit(new_state_name, state.name)
 
 	if current_state:
 		current_state.Exit()

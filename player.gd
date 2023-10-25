@@ -3,6 +3,7 @@ class_name Player
 
 signal change_position
 signal change_cell
+signal change_state
 
 var SPEED := 6.
 var INTERPOLATION_INTERVAL = 0.1
@@ -25,6 +26,9 @@ var cell_pos = Vector2(0, 0)
 	set(id):
 		player = id
 		$PlayerInput.set_multiplayer_authority(id)
+
+func _ready():
+	$StateMachine.Transitioned.connect(func (state, current_state): change_state.emit(state, current_state, self) )
 
 func _physics_process(delta):
 	pre_process(delta)
@@ -77,8 +81,8 @@ func collision_detection(delta):
 			collider.rpc("eat")
 			if collider.type == 'food':
 				set_state("PlayerNormal")
-				#spawn_tail()
-				trim_tail()
+				spawn_tail()
+				#trim_tail()
 			else:
 				rpc("set_slate_color", collider.color)
 				set_state('PlayerCarrySlate')
@@ -86,6 +90,8 @@ func collision_detection(delta):
 			var bounced = head_direction.bounce(collision.get_normal()).rotated(Vector3.BACK, randf_range(-PI/8, PI/8))
 			$PlayerInput.direction = Vector3(bounced.x, bounced.y, 0)
 			$PlayerInput.next_direction = $PlayerInput.direction
+			#if player != 1:
+			set_state("PlayerEliminated")
 	pass
 
 func pre_process(delta):
@@ -101,6 +107,8 @@ func pre_process(delta):
 			if tail.index == 0:
 				first_head = tail
 				break
+	if $Tails.get_child_count() == 0:
+		first_head = false
 	if first_head:
 		direction = $head.position - first_head.position
 	$head.basis = Basis().rotated(Vector3.FORWARD, direction.signed_angle_to(Vector3.UP, Vector3.BACK) - PI/2)
