@@ -10,7 +10,6 @@ signal Transitioned(state : String, current_state : String)
 func _ready():
 	for child in get_children():
 		if child is State:
-			print('add statE: ', child.name)
 			states[child.name] = child
 			child.Transitioned.connect(on_child_transition)
 	if initial_state:

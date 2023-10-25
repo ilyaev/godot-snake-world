@@ -90,7 +90,6 @@ func collision_detection(delta):
 			var bounced = head_direction.bounce(collision.get_normal()).rotated(Vector3.BACK, randf_range(-PI/8, PI/8))
 			$PlayerInput.direction = Vector3(bounced.x, bounced.y, 0)
 			$PlayerInput.next_direction = $PlayerInput.direction
-			#if player != 1:
 			set_state("PlayerEliminated")
 	pass
 
@@ -114,7 +113,7 @@ func pre_process(delta):
 	$head.basis = Basis().rotated(Vector3.FORWARD, direction.signed_angle_to(Vector3.UP, Vector3.BACK) - PI/2)
 
 func spawn_control():
-	if T > 1 and $Tails.get_child_count() < 3:
+	if T > 1 and $Tails.get_child_count() < 3 and is_active() and $PlayerInput.direction.length() != 0:
 		T = 0
 		spawn_tail()
 
@@ -124,6 +123,8 @@ func get_tails():
 	return sorted
 
 func move_tails(delta):
+	if !is_active():
+		return
 	var t_pos = $head.position
 
 	var sorted = get_tails()
@@ -181,3 +182,8 @@ func rpc_set_state(state_name : String):
 func on_cell_change(new_cell_pos):
 	pass
 	#print([cell_pos, new_cell_pos])
+
+func is_active():
+	if get_state() == "PlayerEliminated":
+		return false
+	return true

@@ -1,5 +1,6 @@
 @tool
 extends Node3D
+class_name Field
 
 const SPAWN_RANDOM := 10.0
 
@@ -18,8 +19,7 @@ func _ready():
 	
 	# Connect camera to player position
 	Events.PLAYER_POSITION.connect(func (pos): $Camera.position = Vector3(pos.x, pos.y, $Camera.position.z))
-	$screen.show()
-	$screen/AnimationPlayer.play("fade")
+
 	$board.get_active_material(0).set_shader_parameter("noise", noise_texture)
 
 	if not multiplayer.is_server():
@@ -117,6 +117,9 @@ func get_nearest_same_color(pos : Vector2, color : Color, list : Dictionary):
 		
 		
 func on_player_state_change(state : String, current_state : String, player : Player):
+	if state == 'PlayerEliminated':
+		if player.player == multiplayer.get_unique_id():
+			$StateMachine.transit("FieldGameover")
 	print([player.player, current_state + ' -> ' + state])				
 
 func on_player_cell_change(cell_pos, player):
@@ -156,4 +159,4 @@ func _on_players_spawner_spawned(node):
 
 
 func _on_animation_player_animation_finished(_anim_name):
-	remove_child($screen)
+	$StateMachine.transit("FieldGame")

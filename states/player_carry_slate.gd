@@ -4,7 +4,6 @@ class_name PlayerCarrySlate
 @export var player : Player
 
 func Enter():
-	print('Enter state: ', name, ' for ', player.player)
 	player.get_node("head/slate").show()
 	player.get_node("head/slate").set_instance_shader_parameter('color', player.slate_color)
 	

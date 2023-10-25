@@ -10,4 +10,18 @@ func _ready():
 
 
 func despawn():
-	queue_free()
+	if multiplayer.is_server():
+		queue_free()
+
+
+func explode():
+	$AnimationPlayer.play("fade")
+	var particles = preload("res://tail_boom.tscn").instantiate()
+	await get_tree().create_timer(randf_range(0,0.4)).timeout
+	add_child(particles)
+	pass
+
+
+func _on_animation_player_animation_finished(anim_name):
+	if anim_name == "fade":
+		despawn()

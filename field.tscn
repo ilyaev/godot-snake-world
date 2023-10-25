@@ -1,25 +1,13 @@
-[gd_scene load_steps=17 format=3 uid="uid://b1psoaww4dkmv"]
+[gd_scene load_steps=21 format=3 uid="uid://b1psoaww4dkmv"]
 
 [ext_resource type="Script" path="res://field.gd" id="1_a1q4k"]
 [ext_resource type="PackedScene" uid="uid://cw8w6clmxedi6" path="res://player.tscn" id="2_yh3il"]
 [ext_resource type="Shader" path="res://board.gdshader" id="3_6dudo"]
 [ext_resource type="Texture2D" uid="uid://bd0ewd5v5stm8" path="res://levels/level1.png" id="5_1rdm2"]
 [ext_resource type="Script" path="res://states/state_machine.gd" id="5_8eoi3"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_x2atr"]
-render_priority = 0
-shader = ExtResource("3_6dudo")
-shader_parameter/noise = ExtResource("5_1rdm2")
-
-[sub_resource type="QuadMesh" id="QuadMesh_ylyq7"]
-material = SubResource("ShaderMaterial_x2atr")
-size = Vector2(40, 40)
-
-[sub_resource type="BoxMesh" id="BoxMesh_ir1tk"]
-size = Vector3(42, 1, 1)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_apf7b"]
-size = Vector3(41.5, 1, 1)
+[ext_resource type="Script" path="res://states/field_start.gd" id="6_gd6xd"]
+[ext_resource type="Script" path="res://states/field_game.gd" id="7_ioieq"]
+[ext_resource type="Script" path="res://states/field_gameover.gd" id="8_mswy3"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_lsepe"]
 
@@ -68,11 +56,43 @@ tracks/0/keys = {
 "values": [0.0, 0.0, 1.0]
 }
 
+[sub_resource type="Animation" id="Animation_5uwg7"]
+resource_name = "show"
+length = 0.7
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:transparency")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [1.0, 1.0, 0.0]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_w8csh"]
 _data = {
 "RESET": SubResource("Animation_sthlb"),
-"fade": SubResource("Animation_vggfv")
+"fade": SubResource("Animation_vggfv"),
+"show": SubResource("Animation_5uwg7")
 }
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_x2atr"]
+render_priority = 0
+shader = ExtResource("3_6dudo")
+shader_parameter/noise = ExtResource("5_1rdm2")
+
+[sub_resource type="QuadMesh" id="QuadMesh_ylyq7"]
+material = SubResource("ShaderMaterial_x2atr")
+size = Vector2(40, 40)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ir1tk"]
+size = Vector3(42, 1, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_apf7b"]
+size = Vector3(41.5, 1, 1)
 
 [node name="World" type="Node3D"]
 script = ExtResource("1_a1q4k")
@@ -87,6 +107,19 @@ metadata/dimension = Vector2(0, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12.5537)
 projection = 1
 size = 20.0
+
+[node name="screen" type="MeshInstance3D" parent="Camera"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -9.3266)
+cast_shadow = 0
+gi_mode = 0
+mesh = SubResource("QuadMesh_3h23r")
+skeleton = NodePath("../..")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Camera/screen"]
+libraries = {
+"": SubResource("AnimationLibrary_w8csh")
+}
 
 [node name="PlayersSpawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("res://player.tscn")
@@ -150,20 +183,21 @@ spawn_path = NodePath("../Objects")
 
 [node name="Objects" type="Node3D" parent="."]
 
-[node name="screen" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.2271)
-cast_shadow = 0
-gi_mode = 0
-mesh = SubResource("QuadMesh_3h23r")
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="screen"]
-libraries = {
-"": SubResource("AnimationLibrary_w8csh")
-}
-
 [node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
 script = ExtResource("5_8eoi3")
-initial_state = NodePath("")
+initial_state = NodePath("FieldStart")
 
+[node name="FieldStart" type="Node" parent="StateMachine" node_paths=PackedStringArray("field")]
+script = ExtResource("6_gd6xd")
+field = NodePath("../..")
+
+[node name="FieldGame" type="Node" parent="StateMachine" node_paths=PackedStringArray("field")]
+script = ExtResource("7_ioieq")
+field = NodePath("../..")
+
+[node name="FieldGameover" type="Node" parent="StateMachine" node_paths=PackedStringArray("field")]
+script = ExtResource("8_mswy3")
+field = NodePath("../..")
+
+[connection signal="animation_finished" from="Camera/screen/AnimationPlayer" to="." method="_on_animation_player_animation_finished"]
 [connection signal="spawned" from="PlayersSpawner" to="." method="_on_players_spawner_spawned"]
-[connection signal="animation_finished" from="screen/AnimationPlayer" to="." method="_on_animation_player_animation_finished"]
