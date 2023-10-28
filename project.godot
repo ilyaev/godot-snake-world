@@ -17,3 +17,8 @@ config/features=PackedStringArray("4.2")
 [autoload]
 
 Events="*res://events.gd"
+
+[display]
+
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"

@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://cw8w6clmxedi6"]
+[gd_scene load_steps=18 format=3 uid="uid://cw8w6clmxedi6"]
 
 [ext_resource type="Script" path="res://player.gd" id="1_hwwnj"]
 [ext_resource type="Script" path="res://player_input.gd" id="2_ju3m6"]
@@ -50,6 +50,11 @@ shader = ExtResource("4_jc8lf")
 material = SubResource("ShaderMaterial_pp5e7")
 size = Vector3(0.9, 0.9, 0.9)
 
+[sub_resource type="LabelSettings" id="LabelSettings_8a5xg"]
+font_size = 32
+outline_size = 2
+outline_color = Color(0.964706, 0.443137, 0.313726, 1)
+
 [node name="Player" type="Node3D"]
 script = ExtResource("1_hwwnj")
 
@@ -94,6 +99,7 @@ spot_angle = 62.1227
 
 [node name="slate" type="MeshInstance3D" parent="head"]
 transform = Transform3D(0.853553, -0.146447, 0.5, 0.5, 0.5, -0.707107, -0.146447, 0.853553, 0.5, 1.02913, -0.0188869, 0.00545347)
+visible = false
 mesh = SubResource("BoxMesh_xtgu3")
 
 [node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
@@ -111,6 +117,16 @@ player = NodePath("../..")
 [node name="PlayerEliminated" type="Node" parent="StateMachine" node_paths=PackedStringArray("player")]
 script = ExtResource("8_h3p41")
 player = NodePath("../..")
+
+[node name="Title" type="Label" parent="."]
+visible = false
+offset_left = 255.0
+offset_top = 38.0
+offset_right = 415.0
+offset_bottom = 83.0
+text = "Snake"
+label_settings = SubResource("LabelSettings_8a5xg")
+horizontal_alignment = 1
 
 [connection signal="synchronized" from="ServerSynchronizer" to="." method="_on_server_synchronizer_synchronized"]
 [connection signal="spawned" from="MultiplayerSpawner" to="." method="_on_multiplayer_spawner_spawned"]

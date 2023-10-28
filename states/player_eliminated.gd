@@ -5,6 +5,7 @@ class_name PlayerEliminated
 
 
 func Enter():
+	player.get_node("Title").hide()
 	player.get_node("head/slate").hide()
 	for tail in player.get_node("Tails").get_children():
 		tail.explode()
@@ -13,6 +14,7 @@ func Enter():
 	await get_tree().create_timer(1.).timeout
 	player.pos = Vector3(randi_range(-5,5),randi_range(-5,5),0)
 	player.get_node("head").position = player.pos
+	
 	get_parent().transit("PlayerNormal")
 
 

@@ -98,7 +98,8 @@ func pre_process(delta):
 	elapsed += delta
 
 	$Label.set_text(str(multiplayer.get_unique_id()))
-
+	
+	
 	# Rotate head toward direction
 	var direction = $PlayerInput.direction
 	if !first_head:
@@ -110,6 +111,11 @@ func pre_process(delta):
 		first_head = false
 	if first_head:
 		direction = $head.position - first_head.position
+		var camera = get_parent().get_parent().get_node("Camera")
+		var screen_pos = camera.unproject_position($Tails.get_child(0).global_transform.origin)
+		$Title.set_position(screen_pos)
+		if is_active():
+			$Title.show()
 	$head.basis = Basis().rotated(Vector3.FORWARD, direction.signed_angle_to(Vector3.UP, Vector3.BACK) - PI/2)
 
 func spawn_control():

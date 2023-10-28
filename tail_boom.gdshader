@@ -5,11 +5,11 @@ void vertex() {
 }
 
 void fragment() {
-	vec2 uv = UV;
+	vec2 uv = UV+vec2(sin(TIME*10.)*.2, cos(TIME*10.)*.2);
 	vec3 color = vec3(.9, .3, .2);
 	float d = length(abs(uv-.5));
-	ALBEDO = 1.4/pow(d,2.2) * color;
-	//ALPHA = 1. - step(ALBEDO.r,.00001);
+	ALBEDO = 1.2/pow(d,1.8) * color;
+	ALPHA = step(d, .3);
 }
 
 void light() {

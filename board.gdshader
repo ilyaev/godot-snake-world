@@ -1,13 +1,11 @@
 shader_type spatial;
 
-uniform sampler2D noise : filter_nearest;
+uniform sampler2D level : filter_nearest;
+uniform sampler2D noise;
+uniform float disolve;
 
 float n21(vec2 n) {
     return fract(sin(dot(n, vec2(12.9898 + floor(1.), 4.1414))) * 43758.5453);
-}
-
-float noise21(vec2 n) {
-	return texture(noise, n).r;
 }
 
 vec3 draw_background(vec2 cuv, float T, float cells) {
@@ -35,7 +33,7 @@ void fragment() {
 	vec2 uv = fract(UV*size);
 	vec2 id = floor(UV*size);
 	
-	float n = texture(noise, UV).r;
+	float n = texture(level, UV).r;
 	
 	float line = .07;
 	
@@ -52,9 +50,25 @@ void fragment() {
 	
 	ALBEDO = vec3(.9, .3, .1)*border*.2;
 	
-	if (border == 0.) {
-		ROUGHNESS = 0.;
-		ALBEDO = draw_background(UV, TIME, 80) + draw_background(UV, TIME, 160) + draw_background(UV, TIME, 180);
+	float plasma_scale = TIME * .3;
+	
+	vec3 t = texture(noise, UV/2. + vec2(TIME * -0.01, sin(TIME)*.01)).rgb;
+	vec3 p = max(step(.4+sin(plasma_scale)*.1, t)*.1, step(.6+cos(plasma_scale)*.1, t)*.2);
+	p = max(p, step(8.+cos(plasma_scale+sin(plasma_scale))*.1, t)*.3);
+	ALBEDO -= mix(vec3(0.), ALBEDO, p.r)*3.;
+	ALBEDO -= t*.025;
+	
+	if (disolve > 0.) {
+		ALBEDO = step(disolve,texture(noise, UV*2.).rgb) * ALBEDO;
 	}
+	
+	
+	
+	if (ALBEDO.r == 0. || border == 0.) {
+		ALBEDO = draw_background(UV, TIME, 80) + draw_background(UV, TIME, 160) + draw_background(UV, TIME, 180);
+	} else {
+		ROUGHNESS = ALBEDO.r;
+	}
+	
 	
 }

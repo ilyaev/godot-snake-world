@@ -1,4 +1,3 @@
-@tool
 extends Node3D
 class_name Field
 
@@ -20,7 +19,7 @@ func _ready():
 	# Connect camera to player position
 	Events.PLAYER_POSITION.connect(func (pos): $Camera.position = Vector3(pos.x, pos.y, $Camera.position.z))
 
-	$board.get_active_material(0).set_shader_parameter("noise", noise_texture)
+	$board.get_active_material(0).set_shader_parameter("level", noise_texture)
 
 	if not multiplayer.is_server():
 		return
@@ -120,7 +119,7 @@ func on_player_state_change(state : String, current_state : String, player : Pla
 	if state == 'PlayerEliminated':
 		if player.player == multiplayer.get_unique_id():
 			$StateMachine.transit("FieldGameover")
-	print([player.player, current_state + ' -> ' + state])				
+	#print([player.player, current_state + ' -> ' + state])				
 
 func on_player_cell_change(cell_pos, player):
 	if !multiplayer.is_server():

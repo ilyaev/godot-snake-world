@@ -6,7 +6,7 @@ class_name FieldStart
 func Enter():
 	var screen = field.get_node("%screen")
 	screen.show()
-	screen.get_node("AnimationPlayer").play("fade")
+	screen.get_node("AnimationPlayer").play("show")
 	
 func Exit():
 	field.get_node("%screen").hide()
