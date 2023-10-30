@@ -22,6 +22,12 @@ properties/2/replication_mode = 1
 properties/3/path = NodePath("head:position")
 properties/3/spawn = true
 properties/3/replication_mode = 0
+properties/4/path = NodePath(".:title")
+properties/4/spawn = true
+properties/4/replication_mode = 0
+properties/5/path = NodePath(".:color")
+properties/5/spawn = true
+properties/5/replication_mode = 0
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_hoavk"]
 properties/0/path = NodePath(".:direction")
@@ -91,6 +97,7 @@ shape = SubResource("SphereShape3D_or4fo")
 
 [node name="SpotLight3D" type="SpotLight3D" parent="head"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5.15123)
+visible = false
 light_color = Color(1, 0.0235294, 1, 1)
 light_energy = 3.0
 shadow_enabled = true

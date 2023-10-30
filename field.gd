@@ -12,6 +12,8 @@ var T := 0.0
 var empty_map : Dictionary = {}
 var color_map : Dictionary = {}
 
+var field_map = FieldMap.new()
+
 func _ready():
 	# We only need to spawn players on the server.
 	set_physics_process(multiplayer.is_server())
@@ -34,6 +36,7 @@ func _ready():
 	# Spawn the local player unless this is a dedicated server export.
 	if not OS.has_feature("dedicated_server"):
 		add_player(1)
+		add_player(2)
 	
 	var level_image = noise_texture.get_image()	
 	for x in range(-9, 10):
@@ -43,7 +46,8 @@ func _ready():
 			if pixel > .1:
 				is_empty = true
 			empty_map[str(x) + '_' + str(y)] = is_empty
-	
+			
+	field_map.init(level_image)	
 	
 func _physics_process(delta):
 	T += delta
@@ -82,18 +86,31 @@ func _exit_tree():
 	multiplayer.peer_disconnected.disconnect(del_player)
 
 
+func get_random_name():
+	var names = $Names.get_text().split("\n")
+	return names[randi_range(0, names.size() - 1)]
+
+
 func add_player(id: int):
 	var character = player_scene.instantiate()
-	character.player = id
+	if id == 2:
+		character.player = 1
+	else:
+		character.player = id
 	character.name = str(id)
+	character.title = get_random_name()
 	character.index = $Players.get_child_count()
 	if id != 1:
 		var pos = Vector3(float(randi_range(-SPAWN_RANDOM, SPAWN_RANDOM)), float(randi_range(-SPAWN_RANDOM, SPAWN_RANDOM)), 0)
 		character.pos = pos
 		character.get_node('head').position = pos
-	if multiplayer.is_server():
-		character.change_cell.connect(on_player_cell_change)
-		character.change_state.connect(on_player_state_change)
+	else:
+		character.color = Vector3(.0,.0,.0)
+		character.is_autopilot = true
+		character.title = 'Void'
+	character.get_node("Title").set_text(character.title)
+	character.change_cell.connect(on_player_cell_change)
+	character.change_state.connect(on_player_state_change)
 	Callable($Players.add_child).call_deferred(character, true)
 
 
@@ -118,12 +135,18 @@ func get_nearest_same_color(pos : Vector2, color : Color, list : Dictionary):
 func on_player_state_change(state : String, current_state : String, player : Player):
 	if state == 'PlayerEliminated':
 		if player.player == multiplayer.get_unique_id():
-			$StateMachine.transit("FieldGameover")
-	#print([player.player, current_state + ' -> ' + state])				
+			$StateMachine.transit("FieldGameover")	
+
+func get_server_snake():
+	for snake in $Players.get_children():
+		if snake.is_autopilot:
+			return snake
+	return false
 
 func on_player_cell_change(cell_pos, player):
 	if !multiplayer.is_server():
 		return
+	#add_bolt(player.pos, get_server_snake().pos)
 	var is_empty = is_board_empty(cell_pos)
 	if is_empty:
 		if player.get_state() == 'PlayerCarrySlate':
@@ -136,13 +159,65 @@ func on_player_cell_change(cell_pos, player):
 			var key = get_cell_key(cell_pos)
 			empty_map[key] = false
 			color_map[key] = slate.color
-			var score = get_nearest_same_color(cell_pos, slate.color, {}).size()
+			var nearest = get_nearest_same_color(cell_pos, slate.color, {})
+			var score = nearest.size()
 			for i in range(0, score):
 				player.spawn_tail()
+			
+			var snake = get_server_snake()
+			
+			if snake:
+				var last_tail = 0
+				for k_slate in nearest.keys():
+					var pair = k_slate.split('_')
+					for n_slate in $Objects.get_children():
+						if n_slate is Slate:
+							if n_slate.x == int(pair[0]) && n_slate.y == (int(pair[1]) - 1):
+								add_bolt.rpc(n_slate.position, snake.pos)
+				
+				if is_area_filled(cell_pos, slate.color, false):
+					snake.trim_tail(snake.get_node('Tails').get_children().size())	
+				else:
+					snake.trim_tail(score)
 		else:
-			player.set_state("PlayerEliminated")
-		
-		
+			if !player.is_autopilot:
+				player.set_state("PlayerEliminated")
+	
+	
+@rpc("any_peer","call_local")
+func add_bolt(from, to):
+	var bolt = preload("res://bolt.tscn").instantiate()
+	if from.x > to.x:
+		bolt.reverse = true
+		bolt.p1 = to
+		bolt.p2 = from
+	else:
+		bolt.p1 = from
+		bolt.p2 = to	
+	#bolt.reverse = true
+	bolt.alpha = 0
+	add_child(bolt)
+
+func is_area_filled(cell_pos, color, with_color : bool):
+	var field_pos = field_map.project(cell_pos)
+	var area = field_map.get_area(field_pos)
+	var cells = field_map.get_area_cells(area)
+	if cells.size() == 0:
+		return false
+	var filled = 0
+	var same_color = 0
+	for cell in cells:
+		var pos = field_map.unproject(Vector2(cell[0],cell[1]))
+		var key = get_cell_key(pos)
+		if !empty_map[key]:
+			filled += 1
+		if color_map.has(key) and color_map[key] == color:
+			same_color += 1
+	if with_color and same_color == cells.size():
+		return true
+	if filled == cells.size():
+		return true
+	return false
 
 func get_cell_key(cell_pos):
 	return str(cell_pos.x)+'_'+str(cell_pos.y + 1)
@@ -154,8 +229,12 @@ func del_player(id: int):
 
 
 func _on_players_spawner_spawned(node):
+	node.get_node("Title").set_text(node.title)
 	node.get_node('head').position = node.pos
+	node.change_state.connect(on_player_state_change)
+	node.get_node("head/mesh").set_instance_shader_parameter("color", node.color)
 
 
 func _on_animation_player_animation_finished(_anim_name):
 	$StateMachine.transit("FieldGame")
+

@@ -14,6 +14,7 @@ func despawn():
 		queue_free()
 
 
+@rpc("any_peer", "call_local")
 func explode():
 	$AnimationPlayer.play("fade")
 	var particles = preload("res://tail_boom.tscn").instantiate()
@@ -21,6 +22,8 @@ func explode():
 	add_child(particles)
 	pass
 
+func set_color(color : Vector3):
+	$MeshInstance3D.set_instance_shader_parameter("color", color)
 
 func _on_animation_player_animation_finished(anim_name):
 	if anim_name == "fade":

@@ -18,16 +18,22 @@ var state_buffer := []
 var first_head = null
 var slate_color : Color = Color(1., 1., 1.)
 
+
 var cell_pos = Vector2(0, 0)
 
+var is_autopilot = false
+
+@export var title := ""
+@export var color := Vector3(.9, .3, .1)
 @export var state_timestamp := Time.get_unix_time_from_system()
-@export var pos := Vector3(0,0,0)
+@export var pos := Vector3(0.01,0.01,0.01)
 @export var player := 1 :
 	set(id):
 		player = id
 		$PlayerInput.set_multiplayer_authority(id)
 
 func _ready():
+	$head/mesh.set_instance_shader_parameter("color", color)
 	$StateMachine.Transitioned.connect(func (state, current_state): change_state.emit(state, current_state, self) )
 
 func _physics_process(delta):
@@ -45,10 +51,13 @@ func _physics_process(delta):
 
 
 func server_process(delta):
+	if is_autopilot:
+		autopilot(delta)
 	state_timestamp = Time.get_unix_time_from_system()
 	$head.position += $PlayerInput.direction.normalized() * delta * SPEED
 	pos = $head.position
-	collision_detection(delta)
+	if is_active():
+		collision_detection(delta)
 	var new_cell_pos = Vector2(floor((pos.x)/2), floor((pos.y)/2))
 	if new_cell_pos.x != cell_pos.x || new_cell_pos.y != cell_pos.y:
 		change_cell.emit(new_cell_pos, self)
@@ -70,7 +79,11 @@ func client_process():
 
 
 func player_process(_delta):
-	Events.PLAYER_POSITION.emit($head.position)
+	if name != "1":
+		Events.PLAYER_POSITION.emit($head.position)
+		$Label.set_text(str($Tails.get_child_count()))
+	else:
+		$Label.hide()
 
 func collision_detection(delta):
 	var head_direction = $PlayerInput.direction.normalized()
@@ -82,23 +95,25 @@ func collision_detection(delta):
 			if collider.type == 'food':
 				set_state("PlayerNormal")
 				spawn_tail()
-				#trim_tail()
 			else:
-				rpc("set_slate_color", collider.color)
-				set_state('PlayerCarrySlate')
+				if is_autopilot:
+					spawn_tail()	
+				else:
+					rpc("set_slate_color", collider.color)
+					set_state('PlayerCarrySlate')
 		elif !(collider is Food):
 			var bounced = head_direction.bounce(collision.get_normal()).rotated(Vector3.BACK, randf_range(-PI/8, PI/8))
 			$PlayerInput.direction = Vector3(bounced.x, bounced.y, 0)
 			$PlayerInput.next_direction = $PlayerInput.direction
-			set_state("PlayerEliminated")
+			if !is_autopilot:
+				set_state("PlayerEliminated")
 	pass
 
 func pre_process(delta):
 	T += delta
 	elapsed += delta
 
-	$Label.set_text(str(multiplayer.get_unique_id()))
-	
+	#$Label.set_text(str(multiplayer.get_unique_id()))
 	
 	# Rotate head toward direction
 	var direction = $PlayerInput.direction
@@ -109,14 +124,32 @@ func pre_process(delta):
 				break
 	if $Tails.get_child_count() == 0:
 		first_head = false
-	if first_head:
+	if first_head && is_instance_valid(first_head):
 		direction = $head.position - first_head.position
-		var camera = get_parent().get_parent().get_node("Camera")
-		var screen_pos = camera.unproject_position($Tails.get_child(0).global_transform.origin)
-		$Title.set_position(screen_pos)
-		if is_active():
-			$Title.show()
+		sync_title(direction)
 	$head.basis = Basis().rotated(Vector3.FORWARD, direction.signed_angle_to(Vector3.UP, Vector3.BACK) - PI/2)
+
+func sync_title(direction):
+	var camera = get_parent().get_parent().get_node("Camera")
+	var screen_pos = camera.unproject_position($head.global_transform.origin)
+	screen_pos.y += max(0, abs(direction.x)*20)
+	screen_pos.y -= max(0, abs(direction.y)*20)
+	if direction.x > 0:
+		screen_pos.x -= direction.x * 60
+	if direction.x < 0:
+		screen_pos.x += direction.x * 60
+	$Title.set_position(screen_pos)
+	if is_active():
+		$Title.show()
+
+func autopilot(delta):
+	var foods = get_parent().get_parent().get_foods()
+	if foods.size() == 0:
+		return
+	var seek_food = foods[0].position
+	var n_direction = $PlayerInput.direction.lerp(seek_food - $head.position, delta)
+	$PlayerInput.set_direction(n_direction.normalized()*.9)
+	pass
 
 func spawn_control():
 	if T > 1 and $Tails.get_child_count() < 3 and is_active() and $PlayerInput.direction.length() != 0:
@@ -143,9 +176,11 @@ func move_tails(delta):
 		t_pos = tail.position
 
 
-func trim_tail():
-	if $Tails.get_child_count() > 3:
-		$Tails.get_child($Tails.get_child_count() - 1).despawn()
+func trim_tail(count : int):
+	if $Tails.get_child_count() > 0:
+		for i in range($Tails.get_child_count() - count, $Tails.get_child_count()):
+			if i > 0:
+				$Tails.get_child(i).rpc("explode")
 
 func spawn_tail():
 	var tail = preload("res://tail.tscn").instantiate()
@@ -156,6 +191,7 @@ func spawn_tail():
 	tail.position = t_pos
 	tail.next_pos = t_pos
 	tail.index = $Tails.get_child_count()
+	tail.set_color(color)
 	$head.add_collision_exception_with(tail)
 	$Tails.add_child(tail, true)
 
@@ -167,6 +203,7 @@ func _on_server_synchronizer_synchronized():
 
 func _on_multiplayer_spawner_spawned(node):
 	$head.add_collision_exception_with(node)
+	node.set_color(color)
 	if elapsed > 2.:
 		var sorted = get_tails()
 		node.position = sorted[sorted.size() - 2].position
@@ -187,7 +224,6 @@ func rpc_set_state(state_name : String):
 
 func on_cell_change(new_cell_pos):
 	pass
-	#print([cell_pos, new_cell_pos])
 
 func is_active():
 	if get_state() == "PlayerEliminated":

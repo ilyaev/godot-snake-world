@@ -1,0 +1,36 @@
+[gd_scene load_steps=8 format=3 uid="uid://5su82n8nrf7n"]
+
+[ext_resource type="Script" path="res://sandbox.gd" id="1_jh6tg"]
+[ext_resource type="Shader" path="res://bolt.gdshader" id="2_h3gvt"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_sjasi"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_rj2d8"]
+size = Vector2(25.406, 25.406)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_o7del"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_jbv5b"]
+noise = SubResource("FastNoiseLite_o7del")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_k4tmf"]
+render_priority = 0
+shader = ExtResource("2_h3gvt")
+shader_parameter/noise = SubResource("NoiseTexture2D_jbv5b")
+
+[node name="sandbox" type="Node3D"]
+script = ExtResource("1_jh6tg")
+
+[node name="point1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.6881, -5.5506, 2.08165e-12)
+mesh = SubResource("SphereMesh_sjasi")
+
+[node name="point2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.6085, 5.15777, 0)
+mesh = SubResource("SphereMesh_sjasi")
+
+[node name="plane" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.464227, -0.885716, 0, 0.885716, 0.464227, 0, 0, 0, 1, 5.4602, -0.196414, 2.08165e-12)
+instance_shader_parameters/reverse = false
+mesh = SubResource("QuadMesh_rj2d8")
+surface_material_override/0 = SubResource("ShaderMaterial_k4tmf")
