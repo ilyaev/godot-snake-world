@@ -1,9 +1,10 @@
-[gd_scene load_steps=28 format=3 uid="uid://b1psoaww4dkmv"]
+[gd_scene load_steps=30 format=3 uid="uid://b1psoaww4dkmv"]
 
 [ext_resource type="Script" path="res://field.gd" id="1_a1q4k"]
 [ext_resource type="PackedScene" uid="uid://cw8w6clmxedi6" path="res://player.tscn" id="2_yh3il"]
 [ext_resource type="Shader" path="res://board.gdshader" id="3_6dudo"]
 [ext_resource type="Shader" path="res://back.gdshader" id="4_82mon"]
+[ext_resource type="Texture2D" uid="uid://bhv87mpitw43w" path="res://levels/level2.png" id="4_hy2cv"]
 [ext_resource type="Texture2D" uid="uid://bd0ewd5v5stm8" path="res://levels/level1.png" id="5_1rdm2"]
 [ext_resource type="Script" path="res://states/state_machine.gd" id="5_8eoi3"]
 [ext_resource type="Script" path="res://states/field_start.gd" id="6_gd6xd"]
@@ -157,11 +158,17 @@ size = Vector3(42, 1, 1)
 [sub_resource type="BoxShape3D" id="BoxShape3D_apf7b"]
 size = Vector3(41.5, 1, 1)
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_pn3fl"]
+properties/0/path = NodePath(".:level")
+properties/0/spawn = true
+properties/0/replication_mode = 0
+
 [node name="World" type="Node3D"]
 script = ExtResource("1_a1q4k")
 player_scene = ExtResource("2_yh3il")
-slate_colors = Array[Color]([Color(1, 0.184314, 0.137255, 1), Color(0, 0.760784, 0, 1), Color(0.415686, 0.415686, 0.415686, 1)])
+slate_colors = Array[Color]([Color(0.964706, 0.298039, 0.184314, 1), Color(0.207843, 0.694118, 0.129412, 1), Color(0.415686, 0.415686, 0.415686, 1)])
 noise_texture = ExtResource("5_1rdm2")
+noise_textures = Array[Texture]([ExtResource("5_1rdm2"), ExtResource("4_hy2cv")])
 metadata/dimension = Vector2(0, 0)
 
 [node name="Players" type="Node3D" parent="."]
@@ -276,6 +283,7 @@ offset_right = 40.0
 offset_bottom = 23.0
 text = "Brynn
 Thora
+Anna
 Zephyr
 Nyxen
 Faela
@@ -293,6 +301,7 @@ Leira
 Draven
 Tessa
 Elys
+Yuliya
 Evren
 Serin
 Maelis
@@ -304,6 +313,7 @@ Quinna
 Maeryn
 Kieran
 Lorna
+Lisa
 Isolde
 Rowan
 Thaine
@@ -316,6 +326,7 @@ Xyria
 Thalos
 Drevin
 Keira
+Mykhailo
 Nyria
 Zylan
 Torin
@@ -422,6 +433,7 @@ Blitz
 Shift
 Phaze
 Vylar
+Yura
 Hexa
 Binary
 Jaxx
@@ -454,6 +466,7 @@ Onyx
 Cortex
 Quantum
 Vortex
+Diana
 Xyra
 Verge
 Zed
@@ -473,6 +486,9 @@ Synk
 Solara
 Ionix
 Ravix"
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_pn3fl")
 
 [connection signal="animation_finished" from="Camera/screen/AnimationPlayer" to="." method="_on_animation_player_animation_finished"]
 [connection signal="spawned" from="PlayersSpawner" to="." method="_on_players_spawner_spawned"]

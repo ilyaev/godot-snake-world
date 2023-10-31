@@ -5,8 +5,8 @@
 
 [sub_resource type="SphereMesh" id="SphereMesh_sjasi"]
 
-[sub_resource type="QuadMesh" id="QuadMesh_rj2d8"]
-size = Vector2(25.406, 25.406)
+[sub_resource type="QuadMesh" id="QuadMesh_tyyhh"]
+size = Vector2(15.6769, 15.6769)
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_o7del"]
 
@@ -26,11 +26,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.6881, -5.5506, 2.08165e-1
 mesh = SubResource("SphereMesh_sjasi")
 
 [node name="point2" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.6085, 5.15777, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.7248, 5.15777, 0)
 mesh = SubResource("SphereMesh_sjasi")
 
 [node name="plane" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.464227, -0.885716, 0, 0.885716, 0.464227, 0, 0, 0, 1, 5.4602, -0.196414, 2.08165e-12)
-instance_shader_parameters/reverse = false
-mesh = SubResource("QuadMesh_rj2d8")
+transform = Transform3D(0.277623, -0.96069, 0, 0.96069, 0.277623, 0, 0, 0, 1, -1.98165, -0.196415, 2.08165e-12)
+mesh = SubResource("QuadMesh_tyyhh")
 surface_material_override/0 = SubResource("ShaderMaterial_k4tmf")

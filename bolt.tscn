@@ -3,8 +3,8 @@
 [ext_resource type="Shader" path="res://bolt.gdshader" id="1_4bsa8"]
 [ext_resource type="Script" path="res://bolt.gd" id="1_t0rbt"]
 
-[sub_resource type="QuadMesh" id="QuadMesh_hevbp"]
-size = Vector2(3.16228, 3.16228)
+[sub_resource type="QuadMesh" id="QuadMesh_52xsh"]
+size = Vector2(2.54951, 2.54951)
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_aoci6"]
 
@@ -78,16 +78,13 @@ _data = {
 }
 
 [node name="bolt" type="MeshInstance3D"]
-transform = Transform3D(0.316228, -0.948683, 0, 0.948683, 0.316228, 0, 0, 0, 1, -2, -1, 2.08165e-12)
-instance_shader_parameters/alpha = 1.0
-instance_shader_parameters/fill = 2.08165e-12
-instance_shader_parameters/reverse = false
-mesh = SubResource("QuadMesh_hevbp")
+transform = Transform3D(0.196116, -0.980581, 0, 0.980581, 0.196116, 0, 0, 0, 1, -1.5, -1, 2.08165e-12)
+mesh = SubResource("QuadMesh_52xsh")
 surface_material_override/0 = SubResource("ShaderMaterial_lr124")
 script = ExtResource("1_t0rbt")
 p1 = Vector3(2.08165e-12, 2.08165e-12, 2.08165e-12)
-p2 = Vector3(-4, -2, 2.08165e-12)
-fill = 2.08165e-12
+p2 = Vector3(-3, -2, 2.08165e-12)
+color = Color(0.999973, 0.756458, 0.71654, 1)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {

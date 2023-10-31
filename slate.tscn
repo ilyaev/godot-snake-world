@@ -25,10 +25,9 @@ properties/2/replication_mode = 0
 
 [node name="slate" type="MeshInstance3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.07, 0.93, 0.001)
-instance_shader_parameters/color = Color(0.870588, 0.137255, 0.486275, 1)
+instance_shader_parameters/color = null
 mesh = SubResource("QuadMesh_yi1hh")
 script = ExtResource("1_ldu3i")
-color = Color(0.870588, 0.137255, 0.486275, 1)
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_fttkh")

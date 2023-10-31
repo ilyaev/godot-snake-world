@@ -1,4 +1,3 @@
-@tool
 extends MeshInstance3D
 class_name Bolt
 
@@ -27,6 +26,10 @@ class_name Bolt
 		set_instance_shader_parameter("reverse", new_reverse)
 		reverse = new_reverse
 
+@export var color := Color(.9, .3, .1):
+	set(new_color):
+		set_instance_shader_parameter("color", Vector3(new_color.r,new_color.g,new_color.b))
+		color = new_color
 
 func recalc():
 	var mesh = QuadMesh.new()

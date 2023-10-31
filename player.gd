@@ -51,8 +51,6 @@ func _physics_process(delta):
 
 
 func server_process(delta):
-	if is_autopilot:
-		autopilot(delta)
 	state_timestamp = Time.get_unix_time_from_system()
 	$head.position += $PlayerInput.direction.normalized() * delta * SPEED
 	pos = $head.position
@@ -97,6 +95,7 @@ func collision_detection(delta):
 				spawn_tail()
 			else:
 				if is_autopilot:
+					$Autopilot.set_state('seek')
 					spawn_tail()	
 				else:
 					rpc("set_slate_color", collider.color)
@@ -105,6 +104,7 @@ func collision_detection(delta):
 			var bounced = head_direction.bounce(collision.get_normal()).rotated(Vector3.BACK, randf_range(-PI/8, PI/8))
 			$PlayerInput.direction = Vector3(bounced.x, bounced.y, 0)
 			$PlayerInput.next_direction = $PlayerInput.direction
+			$Autopilot.set_state('evade')
 			if !is_autopilot:
 				set_state("PlayerEliminated")
 	pass
@@ -141,15 +141,6 @@ func sync_title(direction):
 	$Title.set_position(screen_pos)
 	if is_active():
 		$Title.show()
-
-func autopilot(delta):
-	var foods = get_parent().get_parent().get_foods()
-	if foods.size() == 0:
-		return
-	var seek_food = foods[0].position
-	var n_direction = $PlayerInput.direction.lerp(seek_food - $head.position, delta)
-	$PlayerInput.set_direction(n_direction.normalized()*.9)
-	pass
 
 func spawn_control():
 	if T > 1 and $Tails.get_child_count() < 3 and is_active() and $PlayerInput.direction.length() != 0:
@@ -229,3 +220,9 @@ func is_active():
 	if get_state() == "PlayerEliminated":
 		return false
 	return true
+
+func get_head():
+	return $head
+	
+func get_input():
+	return $PlayerInput

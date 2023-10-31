@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dh7m2rajcg56i"]
+
+[ext_resource type="Script" path="res://autopilot.gd" id="1_0mwcn"]
+
+[node name="autopilot" type="Node"]
+script = ExtResource("1_0mwcn")

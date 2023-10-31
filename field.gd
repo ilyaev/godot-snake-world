@@ -8,6 +8,9 @@ var T := 0.0
 @export var player_scene : PackedScene
 @export var slate_colors : Array[Color] = []
 @export var noise_texture : Texture
+@export var noise_textures : Array[Texture] = []
+
+@export var level := 0
 
 var empty_map : Dictionary = {}
 var color_map : Dictionary = {}
@@ -17,7 +20,7 @@ var field_map = FieldMap.new()
 func _ready():
 	# We only need to spawn players on the server.
 	set_physics_process(multiplayer.is_server())
-	
+	noise_texture = noise_textures[level]
 	# Connect camera to player position
 	Events.PLAYER_POSITION.connect(func (pos): $Camera.position = Vector3(pos.x, pos.y, $Camera.position.z))
 
@@ -107,6 +110,8 @@ func add_player(id: int):
 	else:
 		character.color = Vector3(.0,.0,.0)
 		character.is_autopilot = true
+		character.get_node('Autopilot').is_active = true
+		character.get_node('Autopilot').field = self
 		character.title = 'Void'
 	character.get_node("Title").set_text(character.title)
 	character.change_cell.connect(on_player_cell_change)
@@ -173,7 +178,7 @@ func on_player_cell_change(cell_pos, player):
 					for n_slate in $Objects.get_children():
 						if n_slate is Slate:
 							if n_slate.x == int(pair[0]) && n_slate.y == (int(pair[1]) - 1):
-								add_bolt.rpc(n_slate.position, snake.pos)
+								add_bolt.rpc(n_slate.position, snake.pos, n_slate.color)
 				
 				if is_area_filled(cell_pos, slate.color, false):
 					snake.trim_tail(snake.get_node('Tails').get_children().size())	
@@ -185,7 +190,7 @@ func on_player_cell_change(cell_pos, player):
 	
 	
 @rpc("any_peer","call_local")
-func add_bolt(from, to):
+func add_bolt(from, to, color):
 	var bolt = preload("res://bolt.tscn").instantiate()
 	if from.x > to.x:
 		bolt.reverse = true
@@ -194,7 +199,7 @@ func add_bolt(from, to):
 	else:
 		bolt.p1 = from
 		bolt.p2 = to	
-	#bolt.reverse = true
+	bolt.color = color
 	bolt.alpha = 0
 	add_child(bolt)
 

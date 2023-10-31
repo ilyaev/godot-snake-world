@@ -1,4 +1,3 @@
-@tool
 extends Node3D
 
 var p1 := Vector3(0,0,0)
