@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://b7f6mhtaoajbo"]
+
+[ext_resource type="Material" uid="uid://ncxsb1bx7b0p" path="res://levels/block_material.tres" id="1_bd44s"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_t32l3"]
+size = Vector3(10, 4, 1)
+
+[node name="Materials" type="Node3D"]
+
+[node name="Block" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_t32l3")
+surface_material_override/0 = ExtResource("1_bd44s")

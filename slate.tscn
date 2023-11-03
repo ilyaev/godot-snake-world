@@ -25,7 +25,7 @@ properties/2/replication_mode = 0
 
 [node name="slate" type="MeshInstance3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.07, 0.93, 0.001)
-instance_shader_parameters/color = null
+instance_shader_parameters/color = Color(0, 0, 0, 1)
 mesh = SubResource("QuadMesh_yi1hh")
 script = ExtResource("1_ldu3i")
 

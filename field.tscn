@@ -1,14 +1,10 @@
-[gd_scene load_steps=30 format=3 uid="uid://b1psoaww4dkmv"]
+[gd_scene load_steps=19 format=3 uid="uid://b1psoaww4dkmv"]
 
 [ext_resource type="Script" path="res://field.gd" id="1_a1q4k"]
 [ext_resource type="PackedScene" uid="uid://cw8w6clmxedi6" path="res://player.tscn" id="2_yh3il"]
-[ext_resource type="Shader" path="res://board.gdshader" id="3_6dudo"]
 [ext_resource type="Shader" path="res://back.gdshader" id="4_82mon"]
-[ext_resource type="Texture2D" uid="uid://bhv87mpitw43w" path="res://levels/level2.png" id="4_hy2cv"]
-[ext_resource type="Texture2D" uid="uid://bd0ewd5v5stm8" path="res://levels/level1.png" id="5_1rdm2"]
 [ext_resource type="Script" path="res://states/state_machine.gd" id="5_8eoi3"]
 [ext_resource type="Script" path="res://states/field_start.gd" id="6_gd6xd"]
-[ext_resource type="Shader" path="res://wall.gdshader" id="6_t1cal"]
 [ext_resource type="Script" path="res://states/field_game.gd" id="7_ioieq"]
 [ext_resource type="Script" path="res://states/field_gameover.gd" id="8_mswy3"]
 
@@ -18,7 +14,7 @@ shader = ExtResource("4_82mon")
 
 [sub_resource type="QuadMesh" id="QuadMesh_i23sf"]
 material = SubResource("ShaderMaterial_iiyic")
-size = Vector2(80, 80)
+size = Vector2(160, 160)
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_lsepe"]
 
@@ -51,18 +47,6 @@ tracks/0/keys = {
 "update": 0,
 "values": [0.0]
 }
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("%screen/../../board:mesh:material:shader_parameter/disolve")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [2.08165e-12]
-}
 
 [sub_resource type="Animation" id="Animation_vggfv"]
 resource_name = "fade"
@@ -78,18 +62,6 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 0,
 "values": [1.0, 1.0, 0.0]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("%screen/../../board:mesh:material:shader_parameter/disolve")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.7),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [2.08165e-12, 1.0]
 }
 
 [sub_resource type="Animation" id="Animation_5uwg7"]
@@ -107,18 +79,6 @@ tracks/0/keys = {
 "update": 0,
 "values": [0.0, 0.0, 1.0]
 }
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("%screen/../../board:mesh:material:shader_parameter/disolve")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.7),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [1.0, 2.08165e-12]
-}
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_w8csh"]
 _data = {
@@ -127,51 +87,18 @@ _data = {
 "show": SubResource("Animation_5uwg7")
 }
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_jlru7"]
-noise_type = 3
-seed = 9
-fractal_octaves = 2
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_hp20g"]
-seamless = true
-noise = SubResource("FastNoiseLite_jlru7")
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_x2atr"]
-render_priority = 0
-shader = ExtResource("3_6dudo")
-shader_parameter/disolve = 2.08165e-12
-shader_parameter/level = ExtResource("5_1rdm2")
-shader_parameter/noise = SubResource("NoiseTexture2D_hp20g")
-
-[sub_resource type="QuadMesh" id="QuadMesh_ylyq7"]
-material = SubResource("ShaderMaterial_x2atr")
-size = Vector2(40, 40)
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_gxxba"]
-render_priority = 0
-shader = ExtResource("6_t1cal")
-
-[sub_resource type="BoxMesh" id="BoxMesh_ir1tk"]
-material = SubResource("ShaderMaterial_gxxba")
-size = Vector3(42, 1, 1)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_apf7b"]
-size = Vector3(41.5, 1, 1)
-
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_pn3fl"]
-properties/0/path = NodePath(".:level")
-properties/0/spawn = true
-properties/0/replication_mode = 0
 
 [node name="World" type="Node3D"]
 script = ExtResource("1_a1q4k")
 player_scene = ExtResource("2_yh3il")
 slate_colors = Array[Color]([Color(0.964706, 0.298039, 0.184314, 1), Color(0.207843, 0.694118, 0.129412, 1), Color(0.415686, 0.415686, 0.415686, 1)])
-noise_texture = ExtResource("5_1rdm2")
-noise_textures = Array[Texture]([ExtResource("5_1rdm2"), ExtResource("4_hy2cv")])
+level_id = 1
 metadata/dimension = Vector2(0, 0)
 
 [node name="Players" type="Node3D" parent="."]
+
+[node name="Map" type="Node3D" parent="."]
 
 [node name="back" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.97367)
@@ -182,6 +109,12 @@ skeleton = NodePath("../Camera")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12.5537)
 projection = 1
 size = 20.0
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Camera"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3.09279)
+light_specular = 0.0
+omni_range = 30.0
+omni_attenuation = 0.0384733
 
 [node name="screen" type="MeshInstance3D" parent="Camera"]
 unique_name_in_owner = true
@@ -201,59 +134,12 @@ libraries = {
 _spawnable_scenes = PackedStringArray("res://player.tscn")
 spawn_path = NodePath("../Players")
 
-[node name="OmniLight3D" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 9.46091)
-light_specular = 0.0
-omni_range = 30.0
-omni_attenuation = 0.0384733
-
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.840985, -0.539857, 0.0360349, -0.344182, 0.585175, 0.73424, -0.417471, 0.605083, -0.677933, 0.957167, 0, 26.7304)
 light_energy = 2.0
 light_indirect_energy = 3.262
 shadow_enabled = true
 sky_mode = 1
-
-[node name="board" type="MeshInstance3D" parent="."]
-mesh = SubResource("QuadMesh_ylyq7")
-
-[node name="Top" type="StaticBody3D" parent="board"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.08165e-12, 20.5, 0.523)
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="board/Top"]
-mesh = SubResource("BoxMesh_ir1tk")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="board/Top"]
-shape = SubResource("BoxShape3D_apf7b")
-
-[node name="Bottom" type="StaticBody3D" parent="board"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.08165e-12, -20.5, 0.523)
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="board/Bottom"]
-mesh = SubResource("BoxMesh_ir1tk")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="board/Bottom"]
-shape = SubResource("BoxShape3D_apf7b")
-
-[node name="Left" type="StaticBody3D" parent="board"]
-transform = Transform3D(-4.37114e-08, -1, 3.48787e-16, 1, -4.37114e-08, -3.48787e-16, 3.48787e-16, 3.48787e-16, 1, -20.5, 2.08165e-12, 0.523)
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="board/Left"]
-transform = Transform3D(1, 1.21652e-31, 0, 1.21652e-31, 1, 0, 0, 0, 1, 0, 0, 0)
-mesh = SubResource("BoxMesh_ir1tk")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="board/Left"]
-shape = SubResource("BoxShape3D_apf7b")
-
-[node name="Right" type="StaticBody3D" parent="board"]
-transform = Transform3D(-4.37114e-08, -1, 3.48787e-16, 1, -4.37114e-08, -3.48787e-16, 3.48787e-16, 3.48787e-16, 1, 20.5, 2.08165e-12, 0.523)
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="board/Right"]
-transform = Transform3D(1, 1.21652e-31, 0, 1.21652e-31, 1, 0, 0, 0, 1, 0, 0, 0)
-mesh = SubResource("BoxMesh_ir1tk")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="board/Right"]
-shape = SubResource("BoxShape3D_apf7b")
 
 [node name="ObjectsSpawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("res://food.tscn", "res://slate.tscn")

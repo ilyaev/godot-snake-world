@@ -1,30 +1,39 @@
+@tool
 extends Node3D
 class_name Field
 
-const SPAWN_RANDOM := 10.0
-
-var T := 0.0
-
 @export var player_scene : PackedScene
 @export var slate_colors : Array[Color] = []
-@export var noise_texture : Texture
-@export var noise_textures : Array[Texture] = []
+@export var level_id := 0:
+	set(new_level_id):
+		level_id = new_level_id
+		level = load("res://levels/level"+str(new_level_id)+".tscn").instantiate()
+		for child in get_children():
+			if child is Level:
+				child.queue_free()
+		level.build_maps()
+		empty_map = level.empty_map
+		field_map = level.field_map
+		block_map = level.block_map
+		add_child(level)
 
-@export var level := 0
-
+const SPAWN_RANDOM := 10.0
+var T := 0.0
+var noise_texture : Texture
+var level : Level
 var empty_map : Dictionary = {}
+var block_map : Dictionary = {}
 var color_map : Dictionary = {}
-
 var field_map = FieldMap.new()
 
 func _ready():
+	if Engine.is_editor_hint():
+		return
+	
 	# We only need to spawn players on the server.
 	set_physics_process(multiplayer.is_server())
-	noise_texture = noise_textures[level]
 	# Connect camera to player position
 	Events.PLAYER_POSITION.connect(func (pos): $Camera.position = Vector3(pos.x, pos.y, $Camera.position.z))
-
-	$board.get_active_material(0).set_shader_parameter("level", noise_texture)
 
 	if not multiplayer.is_server():
 		return
@@ -40,29 +49,18 @@ func _ready():
 	if not OS.has_feature("dedicated_server"):
 		add_player(1)
 		add_player(2)
-	
-	var level_image = noise_texture.get_image()	
-	for x in range(-9, 10):
-		for y in range(-9, 10):
-			var is_empty = false
-			var pixel = level_image.get_pixelv(Vector2(x, y * -1) + Vector2(10, 10)).r
-			if pixel > .1:
-				is_empty = true
-			empty_map[str(x) + '_' + str(y)] = is_empty
-			
-	field_map.init(level_image)	
-	
+
 func _physics_process(delta):
 	T += delta
 	manage_food(delta)
-	
+
 func get_foods():
 	var res := []
 	for obj in $Objects.get_children():
 		if obj is Food:
 			res.push_back(obj)
-	return res	
-	
+	return res
+
 func manage_food(_delta):
 	if T > 2 and get_foods().size() < $Players.get_child_count() * 3:
 		T = 0
@@ -70,12 +68,8 @@ func manage_food(_delta):
 
 func spawn_food():
 	var food = preload("res://food.tscn").instantiate()
-	var food_pos
-	for i in range(0,20):
-		food_pos = Vector3(randi_range(-8, 8) * 2 + 1,randi_range(-8, 8) * 2 + 1,.8)
-		if is_board_empty(food_pos):
-			break
-	food.position = food_pos
+	var food_pos = level.find_empty_cell_center()
+	food.position = Vector3(food_pos.x, food_pos.y, .8)
 	food.type = 'food'
 	if randf() > .2:
 		food.type = 'slate'
@@ -83,6 +77,8 @@ func spawn_food():
 	Callable($Objects.add_child).call_deferred(food, true)
 
 func _exit_tree():
+	if Engine.is_editor_hint():
+		return
 	if not multiplayer.is_server():
 		return
 	multiplayer.peer_connected.disconnect(add_player)
@@ -103,16 +99,18 @@ func add_player(id: int):
 	character.name = str(id)
 	character.title = get_random_name()
 	character.index = $Players.get_child_count()
-	if id != 1:
-		var pos = Vector3(float(randi_range(-SPAWN_RANDOM, SPAWN_RANDOM)), float(randi_range(-SPAWN_RANDOM, SPAWN_RANDOM)), 0)
-		character.pos = pos
-		character.get_node('head').position = pos
-	else:
+	
+	var pos = level.find_empty_cell_center()
+	character.pos = pos
+	character.get_node('head').position = pos
+	
+	if id == 1:
 		character.color = Vector3(.0,.0,.0)
 		character.is_autopilot = true
 		character.get_node('Autopilot').is_active = true
 		character.get_node('Autopilot').field = self
 		character.title = 'Void'
+		
 	character.get_node("Title").set_text(character.title)
 	character.change_cell.connect(on_player_cell_change)
 	character.change_state.connect(on_player_state_change)
@@ -124,7 +122,7 @@ func is_board_empty(cell_pos):
 	if empty_map.has(key):
 		return empty_map[key]
 	return false
-	
+
 func get_nearest_same_color(pos : Vector2, color : Color, list : Dictionary):
 	list[get_cell_key(pos)] = true
 	for x in range(pos.x - 1, pos.x + 2):
@@ -133,14 +131,19 @@ func get_nearest_same_color(pos : Vector2, color : Color, list : Dictionary):
 				var key = get_cell_key(Vector2(x,y))
 				if color_map.has(key) && color_map[key] == color && !list.has(key):
 					list[key] = true
-					list = get_nearest_same_color(Vector2(x,y), color, list)	
+					list = get_nearest_same_color(Vector2(x,y), color, list)
 	return list
-		
-		
+
+
 func on_player_state_change(state : String, current_state : String, player : Player):
+	if state == 'PlayerNormal' and current_state == 'PlayerEliminated':
+		var pos = level.find_empty_cell_center()
+		player.pos = pos
+		player.get_node("head").position = pos
+			
 	if state == 'PlayerEliminated':
 		if player.player == multiplayer.get_unique_id():
-			$StateMachine.transit("FieldGameover")	
+			$StateMachine.transit("FieldGameover")
 
 func get_server_snake():
 	for snake in $Players.get_children():
@@ -151,7 +154,6 @@ func get_server_snake():
 func on_player_cell_change(cell_pos, player):
 	if !multiplayer.is_server():
 		return
-	#add_bolt(player.pos, get_server_snake().pos)
 	var is_empty = is_board_empty(cell_pos)
 	if is_empty:
 		if player.get_state() == 'PlayerCarrySlate':
@@ -168,9 +170,9 @@ func on_player_cell_change(cell_pos, player):
 			var score = nearest.size()
 			for i in range(0, score):
 				player.spawn_tail()
-			
+
 			var snake = get_server_snake()
-			
+
 			if snake:
 				var last_tail = 0
 				for k_slate in nearest.keys():
@@ -179,16 +181,16 @@ func on_player_cell_change(cell_pos, player):
 						if n_slate is Slate:
 							if n_slate.x == int(pair[0]) && n_slate.y == (int(pair[1]) - 1):
 								add_bolt.rpc(n_slate.position, snake.pos, n_slate.color)
-				
+
 				if is_area_filled(cell_pos, slate.color, false):
-					snake.trim_tail(snake.get_node('Tails').get_children().size())	
+					snake.trim_tail(snake.get_node('Tails').get_children().size())
 				else:
 					snake.trim_tail(score)
 		else:
 			if !player.is_autopilot:
 				player.set_state("PlayerEliminated")
-	
-	
+
+
 @rpc("any_peer","call_local")
 func add_bolt(from, to, color):
 	var bolt = preload("res://bolt.tscn").instantiate()
@@ -198,7 +200,7 @@ func add_bolt(from, to, color):
 		bolt.p2 = from
 	else:
 		bolt.p1 = from
-		bolt.p2 = to	
+		bolt.p2 = to
 	bolt.color = color
 	bolt.alpha = 0
 	add_child(bolt)

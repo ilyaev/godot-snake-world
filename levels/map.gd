@@ -9,8 +9,12 @@ var islands = []
 var dict = {}
 
 func init(image : Image):
-	rows = image.get_width()
-	cols = image.get_height()
+	rows = image.get_height()
+	cols = image.get_width()
+	visited = []
+	islands = []
+	dict = {}
+	grid = []
 	for y in range(0, rows):
 		var row = []
 		var v_row = []
