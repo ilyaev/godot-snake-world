@@ -7,6 +7,8 @@ var empty_map : Dictionary = {}
 var block_map : Dictionary = {}
 var field_map = FieldMap.new()
 
+var block_queue : Array[Slate] = []
+
 
 @export var noise_texture : Texture:
 	set(new_noise_texture):
@@ -45,13 +47,13 @@ func build_walls():
 	add_wall('Right', Vector3(dimensions.y * 2 + 2, 1, 1), Vector3(dimensions.x * -1 - .5, 0, .5))
 
 func add_wall(title, size, pos):
-	var mesh = MeshInstance3D.new()
-	mesh.mesh = BoxMesh.new()
-	mesh.mesh.set_size(size)
-	mesh.mesh.set_material(preload("res://levels/wall_material.tres"))
+	var new_mesh = MeshInstance3D.new()
+	new_mesh.mesh = BoxMesh.new()
+	new_mesh.mesh.set_size(size)
+	new_mesh.mesh.set_material(preload("res://levels/wall_material.tres"))
 	
 	var body = StaticBody3D.new()
-	body.add_child(mesh)
+	body.add_child(new_mesh)
 	body.position = pos
 	
 	var collision = CollisionShape3D.new()
@@ -88,6 +90,16 @@ func build_maps():
 				for y in range(start_y, start_y + block.height):
 					block_map[str(x) + '_' + str(y)] = true
 
+func add_block(x,y):
+	var block = preload("res://levels/block.tscn").instantiate()
+	block.width = 1
+	block.height = 1
+	block.x = x
+	block.y = y
+	block_map[str(x) + '_' + str(y)] = true
+	return block
+	#add_child(block)
+
 func find_empty_cell_center():
 	var pos = find_empty_cell()
 	return pos * 2 + Vector3(1,1,0)
@@ -95,7 +107,7 @@ func find_empty_cell_center():
 func find_empty_cell():
 	var pos = Vector3(0,0,0)
 	for i in range(0, 20):
-		pos = Vector3(randi_range(0, dimensions.x), randi_range(0, dimensions.x), 0) - Vector3(dimensions.x/2, dimensions.y/2,0)
+		pos = Vector3(randi_range(0, dimensions.x), randi_range(0, dimensions.y), 0) - Vector3(dimensions.x/2, dimensions.y/2,0)
 		var key = str(pos.x) + '_' + str(pos.y)
 		if abs(pos.x) >= (dimensions.x/2 - 2) or abs(pos.y) >= (dimensions.y/2 - 2):
 			continue

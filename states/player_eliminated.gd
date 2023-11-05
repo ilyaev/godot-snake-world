@@ -5,6 +5,7 @@ class_name PlayerEliminated
 
 
 func Enter():
+	player.add_score.rpc(0)
 	player.get_node("Title").hide()
 	player.get_node("head/slate").hide()
 	for tail in player.get_node("Tails").get_children():
@@ -18,5 +19,5 @@ func Enter():
 	get_parent().transit("PlayerNormal")
 
 
-func Physics_Update(delta):
+func Physics_Update(_delta):
 	pass

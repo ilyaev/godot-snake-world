@@ -4,6 +4,7 @@ class_name Field
 
 @export var player_scene : PackedScene
 @export var slate_colors : Array[Color] = []
+@export var max_level := 3
 @export var level_id := 0:
 	set(new_level_id):
 		level_id = new_level_id
@@ -15,9 +16,8 @@ class_name Field
 		empty_map = level.empty_map
 		field_map = level.field_map
 		block_map = level.block_map
-		add_child(level)
+		add_child.call_deferred(level)
 
-const SPAWN_RANDOM := 10.0
 var T := 0.0
 var noise_texture : Texture
 var level : Level
@@ -29,6 +29,8 @@ var field_map = FieldMap.new()
 func _ready():
 	if Engine.is_editor_hint():
 		return
+	
+	Events.camera = $Camera
 	
 	# We only need to spawn players on the server.
 	set_physics_process(multiplayer.is_server())
@@ -168,22 +170,27 @@ func on_player_cell_change(cell_pos, player):
 			color_map[key] = slate.color
 			var nearest = get_nearest_same_color(cell_pos, slate.color, {})
 			var score = nearest.size()
+			player.add_score.rpc(score * 100)
 			for i in range(0, score):
 				player.spawn_tail()
 
 			var snake = get_server_snake()
 
 			if snake:
-				var last_tail = 0
+				var slate_score = 0
 				for k_slate in nearest.keys():
 					var pair = k_slate.split('_')
 					for n_slate in $Objects.get_children():
 						if n_slate is Slate:
 							if n_slate.x == int(pair[0]) && n_slate.y == (int(pair[1]) - 1):
 								add_bolt.rpc(n_slate.position, snake.pos, n_slate.color)
+								slate_score += 100
+								n_slate.score = slate_score
+								n_slate.show_score.rpc(slate_score)
 
 				if is_area_filled(cell_pos, slate.color, false):
 					snake.trim_tail(snake.get_node('Tails').get_children().size())
+					close_area(cell_pos)
 				else:
 					snake.trim_tail(score)
 		else:
@@ -204,6 +211,18 @@ func add_bolt(from, to, color):
 	bolt.color = color
 	bolt.alpha = 0
 	add_child(bolt)
+	
+func close_area(cell_pos):
+	var field_pos = field_map.project(cell_pos)
+	var area = field_map.get_area(field_pos)
+	var cells = field_map.get_area_cells(area)
+	if cells.size() == 0:
+		return false
+	for cell in cells:
+		var u_pos = field_map.unproject(Vector2(cell[0],cell[1]))
+		for slate in $Objects.get_children():
+			if slate is Slate and slate.x == u_pos.x and slate.y == u_pos.y:
+				$BlockRaiser.slate_queue.push_back(slate)
 
 func is_area_filled(cell_pos, color, with_color : bool):
 	var field_pos = field_map.project(cell_pos)
@@ -245,3 +264,28 @@ func _on_players_spawner_spawned(node):
 func _on_animation_player_animation_finished(_anim_name):
 	$StateMachine.transit("FieldGame")
 
+func next_level():
+	set_state.rpc("FieldStart")
+	await get_tree().create_timer(.2).timeout
+	for obj in $Objects.get_children():
+		obj.queue_free()
+	change_level_id.rpc(level_id + 1)
+	await get_tree().create_timer(.1).timeout
+	for player in $Players.get_children():
+		player.reset()
+		var pos = level.find_empty_cell_center()
+		player.pos = pos
+		player.get_node('head').position = pos
+		
+
+@rpc("any_peer","call_local")
+func change_level_id(new_id):
+	if new_id > max_level:
+		new_id = 1
+	if new_id < 1:
+		new_id = max_level
+	level_id = new_id
+
+@rpc("any_peer", "call_local")
+func set_state(new_state):
+	$StateMachine.transit(new_state)

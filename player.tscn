@@ -76,6 +76,7 @@ replication_config = SubResource("SceneReplicationConfig_hoavk")
 script = ExtResource("2_ju3m6")
 
 [node name="Label" type="Label" parent="."]
+visible = false
 offset_right = 40.0
 offset_bottom = 23.0
 text = "SNAKE"

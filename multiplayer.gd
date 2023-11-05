@@ -3,6 +3,7 @@ extends Node
 const PORT = 4433
 
 @export var level_scene : PackedScene
+var current_level : Field
 
 func _ready():
 	# Start paused
@@ -70,12 +71,19 @@ func change_level(scene: PackedScene):
 
 # The server can restart the level by pressing HOME.
 func _input(event):
-	if not multiplayer.is_server():
+	#print_orphan_nodes()
+	#if not multiplayer.is_server():
+		#if event.is_action_pressed("ui_accept"):
+			#get_tree().paused = true
+			#var level = $Level
+			#for c in level.get_children():
+				#level.remove_child(c)
+				#c.queue_free()
+			#multiplayer.multiplayer_peer.close()
+			#_on_connect_pressed()
+	#else:
+	if multiplayer.is_server():
 		if event.is_action_pressed("ui_accept"):
-			get_tree().paused = true
-			var level = $Level
-			for c in level.get_children():
-				level.remove_child(c)
-				c.queue_free()
-			multiplayer.multiplayer_peer.close()
-			_on_connect_pressed()
+			print("Next Level")
+			current_level = $Level.get_child(0)
+			current_level.next_level()

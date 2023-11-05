@@ -31,7 +31,7 @@ func _physics_process(delta):
 @rpc("any_peer", "call_local")
 func eat():
 	multiplier = 5.
-	remove_child($CollisionShape3D)
+	$CollisionShape3D.queue_free()
 	eaten = true
 	$AnimationPlayer.play("fade")
 

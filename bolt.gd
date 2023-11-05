@@ -32,7 +32,7 @@ class_name Bolt
 		color = new_color
 
 func recalc():
-	var mesh = QuadMesh.new()
+	var new_mesh = QuadMesh.new()
 	
 	var diagonal = (p2-p1).length()
 	var a = diagonal/sqrt(2)
@@ -50,8 +50,8 @@ func recalc():
 	
 	var angle = atan((p2.y - p1.y)/(p2.x-p1.x))
 
-	mesh.set_size(Vector2(a, a));
-	set_mesh(mesh)
+	new_mesh.set_size(Vector2(a, a));
+	set_mesh(new_mesh)
 	set_position(p1 + Vector3(width/2*sign(p2.x-p1.x), height/2*sign(p2.y-p1.y), 0))
 	set_instance_shader_parameter("reverse", reversed)
 	var extra = 0
@@ -63,6 +63,6 @@ func _ready():
 	await get_tree().create_timer(randf_range(0,0.3)).timeout
 	$AnimationPlayer.play("show")
 
-func _on_animation_player_animation_finished(anim_name):
+func _on_animation_player_animation_finished(_anim_name):
 	if not Engine.is_editor_hint():
 		queue_free()

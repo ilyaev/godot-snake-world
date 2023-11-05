@@ -1,9 +1,28 @@
-[gd_scene load_steps=2 format=3 uid="uid://ctfrok1744ls4"]
+[gd_scene load_steps=3 format=3 uid="uid://ctfrok1744ls4"]
 
 [ext_resource type="Script" path="res://levels/block.gd" id="1_r6fvy"]
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_pppji"]
+properties/0/path = NodePath(".:x")
+properties/0/spawn = true
+properties/0/replication_mode = 0
+properties/1/path = NodePath(".:y")
+properties/1/spawn = true
+properties/1/replication_mode = 0
+properties/2/path = NodePath(".:width")
+properties/2/spawn = true
+properties/2/replication_mode = 0
+properties/3/path = NodePath(".:height")
+properties/3/spawn = true
+properties/3/replication_mode = 0
+
 [node name="block" type="StaticBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0.001)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.07, -3.07, 0.5)
 script = ExtResource("1_r6fvy")
+x = 1
+y = -2
 width = 6
 height = 5
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_pppji")

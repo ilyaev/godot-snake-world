@@ -3,9 +3,9 @@
 [ext_resource type="Shader" path="res://levels/block.gdshader" id="1_rbhq3"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_j3nss"]
-noise_type = 4
-seed = 24
-fractal_octaves = 8
+noise_type = 2
+seed = 20
+fractal_octaves = 2
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_7trw5"]
 seamless = true

@@ -17,7 +17,7 @@ vec3 draw_background(vec2 cuv, float T, float cells) {
 	
 	float n = n21(id + cells);
 	
-	float d = length(uv - .5 + vec2(fract(n*12.22)*.8 - .4, fract(n*1222.3322)*.8 - .4));
+	float d = length(uv - .5 + vec2(fract(n*12.22)*.4 - .2, fract(n*1222.3322)*.4 - .2));
 	
 	if (n < .97) {
 		return vec3(0.);

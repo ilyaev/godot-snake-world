@@ -69,10 +69,10 @@ func find_islands():
 				islands.push_back(island)
 
 func project(cell_pos):
-	return Vector2(cell_pos.x, cell_pos.y * -1) + Vector2(cols / 2, rows / 2) - Vector2(0, 1)
+	return Vector2(cell_pos.x, cell_pos.y * -1) + Vector2(cols / 2., rows / 2.) - Vector2(0, 1)
 
 func unproject(pos):
-	var res = Vector2(pos.x, pos.y) - Vector2(cols / 2, rows / 2) + Vector2(0, 1)
+	var res = Vector2(pos.x, pos.y) - Vector2(cols / 2., rows / 2.) + Vector2(0, 1)
 	res.y *= -1
 	return res
 

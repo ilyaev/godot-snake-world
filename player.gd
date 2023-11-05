@@ -9,6 +9,7 @@ var SPEED := 6.
 var INTERPOLATION_INTERVAL = 0.1
 var index = 0
 var T = 0
+var score = 0
 
 var elapsed = 0
 
@@ -77,11 +78,10 @@ func client_process():
 
 
 func player_process(_delta):
-	if name != "1":
+	if name != "1" and player == multiplayer.get_unique_id():
 		Events.PLAYER_POSITION.emit($head.position)
-		$Label.set_text(str($Tails.get_child_count()))
-	else:
-		$Label.hide()
+		$Label.show()
+		$Label.set_text(str(score))
 
 func collision_detection(delta):
 	var head_direction = $PlayerInput.direction.normalized()
@@ -105,7 +105,7 @@ func collision_detection(delta):
 			$PlayerInput.direction = Vector3(bounced.x, bounced.y, 0)
 			$PlayerInput.next_direction = $PlayerInput.direction
 			$Autopilot.set_state('evade')
-			if !is_autopilot:
+			if !is_autopilot and collider is Tail:
 				set_state("PlayerEliminated")
 	pass
 
@@ -206,14 +206,14 @@ func get_state():
 	return $StateMachine.current_state.name
 
 @rpc("any_peer", "call_local")
-func set_slate_color(color : Color):
-	slate_color = color
+func set_slate_color(new_color : Color):
+	slate_color = new_color
 
 @rpc("any_peer", "call_local")
 func rpc_set_state(state_name : String):
 	$StateMachine.transit(state_name)
 
-func on_cell_change(new_cell_pos):
+func on_cell_change(_new_cell_pos):
 	pass
 
 func is_active():
@@ -226,3 +226,15 @@ func get_head():
 	
 func get_input():
 	return $PlayerInput
+
+func reset():
+	for tail in $Tails.get_children():
+		tail.queue_free()
+		$PlayerInput.set_direction(Vector3(0,0,0))
+	
+@rpc("any_peer","call_local")
+func add_score(new_score):
+	if new_score == 0:
+		score = 0
+	else:
+		score += new_score
