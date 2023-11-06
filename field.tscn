@@ -97,6 +97,7 @@ properties/0/replication_mode = 0
 script = ExtResource("1_a1q4k")
 player_scene = ExtResource("2_yh3il")
 slate_colors = Array[Color]([Color(0.964706, 0.298039, 0.184314, 1), Color(0.207843, 0.694118, 0.129412, 1), Color(0.415686, 0.415686, 0.415686, 1)])
+max_level = 7
 level_id = 1
 metadata/dimension = Vector2(0, 0)
 

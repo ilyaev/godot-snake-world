@@ -5,22 +5,26 @@ class_name Block
 @export var x := 0:
 	set(new_x):
 		x = new_x
-		rebuild.call_deferred()
+		if Engine.is_editor_hint():
+			rebuild.call_deferred()
 		
 @export var y := 0:
 	set(new_y):
 		y = new_y
-		rebuild.call_deferred()
+		if Engine.is_editor_hint():
+			rebuild.call_deferred()
 		
 @export var width := 1:
 	set(new_width):
 		width = new_width
-		rebuild.call_deferred()
+		if Engine.is_editor_hint():
+			rebuild.call_deferred()
 		
 @export var height := 1:
 	set(new_height):
 		height = new_height
-		rebuild.call_deferred()
+		if Engine.is_editor_hint():
+			rebuild.call_deferred()
 
 func _notification(what):
 	if what == NOTIFICATION_TRANSFORM_CHANGED:
@@ -29,7 +33,6 @@ func _notification(what):
 func rebuild():
 	for child in get_children():
 		child.queue_free()
-		
 	var mesh = MeshInstance3D.new()
 	mesh.mesh = BoxMesh.new()
 	mesh.mesh.set_size(Vector3(round(width)*2 - .14, round(height)*2 - .14, 1.))
@@ -51,6 +54,7 @@ func rebuild():
 func _ready():
 	if Engine.is_editor_hint():
 		return
+	rebuild()
 	set_process(true)
 	
 func _process(delta):

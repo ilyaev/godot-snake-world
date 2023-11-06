@@ -33,9 +33,15 @@ func _process(delta):
 			if !flag:
 				break
 		if flag:
+			for food in field.get_foods():
+				var d = (food.position - slate.position).length()
+				if d < 2.5:
+					flag = false
+					break
+		if flag:
 			var block = field.level.add_block(slate.x, slate.y)
 			field.get_node("Objects").add_child(block, true)
-			slate.queue_free()
+			slate.despawn()
 		else:
 			new_queue.push_back(slate)
 			

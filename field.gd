@@ -64,16 +64,24 @@ func get_foods():
 	return res
 
 func manage_food(_delta):
-	if T > 2 and get_foods().size() < $Players.get_child_count() * 3:
+	if T > 2. and get_foods().size() < $Players.get_child_count() * 3:
 		T = 0
 		spawn_food()
 
 func spawn_food():
 	var food = preload("res://food.tscn").instantiate()
-	var food_pos = level.find_empty_cell_center()
-	food.position = Vector3(food_pos.x, food_pos.y, .8)
+	for i in range(0,40):
+		var food_pos = level.find_empty_cell_center()
+		food.position = Vector3(food_pos.x, food_pos.y, .8)
+		var flag = true
+		for obj in get_foods():
+			if (food_pos - obj.position).length() < 3.:
+				flag = false
+		if flag:
+			print(i)
+			break
 	food.type = 'food'
-	if randf() > .2:
+	if randf() > .15:
 		food.type = 'slate'
 		food.color = slate_colors[randi_range(0, slate_colors.size() - 1)]
 	Callable($Objects.add_child).call_deferred(food, true)

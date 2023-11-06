@@ -51,3 +51,7 @@ func _process(delta):
 		set_process(false)
 		$Label.hide()
 	pass
+	
+func despawn():
+	await get_tree().create_timer(.5).timeout
+	queue_free()
