@@ -217,7 +217,7 @@ func on_cell_change(_new_cell_pos):
 	pass
 
 func is_active():
-	if get_state() == "PlayerEliminated":
+	if get_state() == "PlayerEliminated" or get_state() == "PlayerStarting":
 		return false
 	return true
 

@@ -4,12 +4,12 @@
 [ext_resource type="Script" path="res://levels/level.gd" id="2_xdc4r"]
 [ext_resource type="Texture2D" uid="uid://copxklk8csks1" path="res://levels/level4.png" id="3_d1o0s"]
 
-[sub_resource type="QuadMesh" id="QuadMesh_d4gvg"]
+[sub_resource type="QuadMesh" id="QuadMesh_w1nss"]
 material = ExtResource("1_2tpa4")
 size = Vector2(48, 48)
 
 [node name="board" type="MeshInstance3D"]
 instance_shader_parameters/dimensions = Vector2(24, 24)
-mesh = SubResource("QuadMesh_d4gvg")
+mesh = SubResource("QuadMesh_w1nss")
 script = ExtResource("2_xdc4r")
 noise_texture = ExtResource("3_d1o0s")

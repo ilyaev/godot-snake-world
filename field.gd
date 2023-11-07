@@ -11,6 +11,8 @@ class_name Field
 		level = load("res://levels/level"+str(new_level_id)+".tscn").instantiate()
 		for child in get_children():
 			if child is Level:
+				level.block_queue.clear()
+				$BlockRaiser.slate_queue.clear()
 				child.queue_free()
 		level.build_maps()
 		empty_map = level.empty_map
@@ -32,7 +34,6 @@ func _ready():
 	
 	Events.camera = $Camera
 	
-	# We only need to spawn players on the server.
 	set_physics_process(multiplayer.is_server())
 	# Connect camera to player position
 	Events.PLAYER_POSITION.connect(func (pos): $Camera.position = Vector3(pos.x, pos.y, $Camera.position.z))
@@ -42,7 +43,7 @@ func _ready():
 
 	multiplayer.peer_connected.connect(add_player)
 	multiplayer.peer_disconnected.connect(del_player)
-
+	
 	# Spawn already connected players
 	for id in multiplayer.get_peers():
 		add_player(id)
@@ -55,6 +56,9 @@ func _ready():
 func _physics_process(delta):
 	T += delta
 	manage_food(delta)
+
+func get_players():
+	return $Players.get_children()
 
 func get_foods():
 	var res := []
@@ -78,7 +82,6 @@ func spawn_food():
 			if (food_pos - obj.position).length() < 3.:
 				flag = false
 		if flag:
-			print(i)
 			break
 	food.type = 'food'
 	if randf() > .15:
@@ -162,8 +165,6 @@ func get_server_snake():
 	return false
 
 func on_player_cell_change(cell_pos, player):
-	if !multiplayer.is_server():
-		return
 	var is_empty = is_board_empty(cell_pos)
 	if is_empty:
 		if player.get_state() == 'PlayerCarrySlate':
@@ -269,7 +270,7 @@ func _on_players_spawner_spawned(node):
 	node.get_node("head/mesh").set_instance_shader_parameter("color", node.color)
 
 
-func _on_animation_player_animation_finished(_anim_name):
+func _on_screen_faded(anim_name):
 	$StateMachine.transit("FieldGame")
 
 func next_level():

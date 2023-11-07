@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://b1psoaww4dkmv"]
+[gd_scene load_steps=21 format=3 uid="uid://b1psoaww4dkmv"]
 
 [ext_resource type="Script" path="res://field.gd" id="1_a1q4k"]
 [ext_resource type="PackedScene" uid="uid://cw8w6clmxedi6" path="res://player.tscn" id="2_yh3il"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://states/field_game.gd" id="7_ioieq"]
 [ext_resource type="Script" path="res://states/field_gameover.gd" id="8_mswy3"]
 [ext_resource type="Script" path="res://block_raiser.gd" id="8_uyp0e"]
+[ext_resource type="Script" path="res://level_watcher.gd" id="9_31a78"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_iiyic"]
 render_priority = 0
@@ -382,8 +383,13 @@ script = ExtResource("8_uyp0e")
 players = NodePath("../Players")
 field = NodePath("..")
 
+[node name="LevelWatcher" type="Node" parent="." node_paths=PackedStringArray("players", "field")]
+script = ExtResource("9_31a78")
+players = NodePath("../Players")
+field = NodePath("..")
+
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_pn3fl")
 
-[connection signal="animation_finished" from="Camera/screen/AnimationPlayer" to="." method="_on_animation_player_animation_finished"]
+[connection signal="animation_finished" from="Camera/screen/AnimationPlayer" to="." method="_on_screen_faded"]
 [connection signal="spawned" from="PlayersSpawner" to="." method="_on_players_spawner_spawned"]
