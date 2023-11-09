@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://b1psoaww4dkmv"]
+[gd_scene load_steps=22 format=3 uid="uid://b1psoaww4dkmv"]
 
 [ext_resource type="Script" path="res://field.gd" id="1_a1q4k"]
 [ext_resource type="PackedScene" uid="uid://cw8w6clmxedi6" path="res://player.tscn" id="2_yh3il"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://states/field_start.gd" id="6_gd6xd"]
 [ext_resource type="Script" path="res://states/field_game.gd" id="7_ioieq"]
 [ext_resource type="Script" path="res://states/field_gameover.gd" id="8_mswy3"]
+[ext_resource type="Script" path="res://states/field_next_level.gd" id="8_ppiwr"]
 [ext_resource type="Script" path="res://block_raiser.gd" id="8_uyp0e"]
 [ext_resource type="Script" path="res://level_watcher.gd" id="9_31a78"]
 
@@ -166,6 +167,10 @@ field = NodePath("../..")
 
 [node name="FieldGameover" type="Node" parent="StateMachine" node_paths=PackedStringArray("field")]
 script = ExtResource("8_mswy3")
+field = NodePath("../..")
+
+[node name="FieldNextLevel" type="Node" parent="StateMachine" node_paths=PackedStringArray("field")]
+script = ExtResource("8_ppiwr")
 field = NodePath("../..")
 
 [node name="Names" type="Label" parent="."]

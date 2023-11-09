@@ -36,7 +36,7 @@ func _on_host_pressed():
 
 func _on_connect_pressed():
 	# Start as client
-	var txt : String = $UI/Net/Options/Remote.text
+	var txt : String = %Remote.text
 	if txt == "":
 		OS.alert("Need a remote to connect to.")
 		return
@@ -67,21 +67,8 @@ func change_level(scene: PackedScene):
 		c.queue_free()
 	# Add new level.
 	Callable(level.add_child).call_deferred(scene.instantiate())
-	#level.add_child(scene.instantiate())
 
-# The server can restart the level by pressing HOME.
 func _input(event):
-	#print_orphan_nodes()
-	#if not multiplayer.is_server():
-		#if event.is_action_pressed("ui_accept"):
-			#get_tree().paused = true
-			#var level = $Level
-			#for c in level.get_children():
-				#level.remove_child(c)
-				#c.queue_free()
-			#multiplayer.multiplayer_peer.close()
-			#_on_connect_pressed()
-	#else:
 	if multiplayer.is_server():
 		if event.is_action_pressed("ui_accept"):
 			print("Next Level")

@@ -38,6 +38,8 @@ func _ready():
 	$StateMachine.Transitioned.connect(func (state, current_state): change_state.emit(state, current_state, self) )
 
 func _physics_process(delta):
+	if is_paused():
+		return
 	pre_process(delta)
 
 	if is_multiplayer_authority():
@@ -153,8 +155,8 @@ func get_tails():
 	return sorted
 
 func move_tails(delta):
-	if !is_active():
-		return
+	#if !is_active():
+		#return
 	var t_pos = $head.position
 
 	var sorted = get_tails()
@@ -211,6 +213,9 @@ func set_slate_color(new_color : Color):
 
 @rpc("any_peer", "call_local")
 func rpc_set_state(state_name : String):
+	set_state_local(state_name)
+	
+func set_state_local(state_name : String):
 	$StateMachine.transit(state_name)
 
 func on_cell_change(_new_cell_pos):
@@ -220,6 +225,11 @@ func is_active():
 	if get_state() == "PlayerEliminated" or get_state() == "PlayerStarting":
 		return false
 	return true
+
+func is_paused():
+	if get_state() == "PlayerPaused":
+		return true
+	return false
 
 func get_head():
 	return $head
@@ -238,3 +248,8 @@ func add_score(new_score):
 		score = 0
 	else:
 		score += new_score
+		
+func spawned(node):
+	node.get_node("Title").set_text(node.title)
+	node.get_node('head').position = node.pos
+	node.get_node("head/mesh").set_instance_shader_parameter("color", node.color)

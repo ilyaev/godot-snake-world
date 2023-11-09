@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://cw8w6clmxedi6"]
+[gd_scene load_steps=21 format=3 uid="uid://cw8w6clmxedi6"]
 
 [ext_resource type="Script" path="res://player.gd" id="1_hwwnj"]
 [ext_resource type="Script" path="res://player_input.gd" id="2_ju3m6"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://states/player_carry_slate.gd" id="7_ptnik"]
 [ext_resource type="Script" path="res://states/player_eliminated.gd" id="8_h3p41"]
 [ext_resource type="PackedScene" uid="uid://dh7m2rajcg56i" path="res://autopilot.tscn" id="9_e00uq"]
+[ext_resource type="Script" path="res://states/player_paused.gd" id="10_t82jk"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_fb1vy"]
 properties/0/path = NodePath(".:player")
@@ -130,6 +131,10 @@ player = NodePath("../..")
 
 [node name="PlayerEliminated" type="Node" parent="StateMachine" node_paths=PackedStringArray("player")]
 script = ExtResource("8_h3p41")
+player = NodePath("../..")
+
+[node name="PlayerPaused" type="Node" parent="StateMachine" node_paths=PackedStringArray("player")]
+script = ExtResource("10_t82jk")
 player = NodePath("../..")
 
 [node name="Title" type="Label" parent="."]

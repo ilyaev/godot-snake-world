@@ -39,7 +39,7 @@ func rebuild():
 	mesh.mesh.set_material(preload("res://levels/block_material.tres"))
 	mesh.set_instance_shader_parameter("dimensions", Vector2(width, height))
 	mesh.set_instance_shader_parameter("pos", Vector2(x, y))
-	position = Vector3(x * 2 + 1.07, y * 2 + .93, .02 + randf_range(0,.2))
+	position = Vector3(x * 2 + 1.07, y * 2 + .93, .0 + randf_range(0,.1))
 
 	add_child(mesh)
 	

@@ -32,6 +32,8 @@ func _ready():
 	if Engine.is_editor_hint():
 		return
 	
+	$StateMachine.Transitioned.connect(_on_state_change)
+	
 	Events.camera = $Camera
 	
 	set_physics_process(multiplayer.is_server())
@@ -59,6 +61,9 @@ func _physics_process(delta):
 
 func get_players():
 	return $Players.get_children()
+
+func get_objects():
+	return $Objects.get_children()
 
 func get_foods():
 	var res := []
@@ -149,7 +154,8 @@ func get_nearest_same_color(pos : Vector2, color : Color, list : Dictionary):
 
 
 func on_player_state_change(state : String, current_state : String, player : Player):
-	if state == 'PlayerNormal' and current_state == 'PlayerEliminated':
+	#print([player.get_node('Title').get_text(), current_state,'->',state])
+	if state == 'PlayerStarting' and current_state == 'PlayerEliminated':
 		var pos = level.find_empty_cell_center()
 		player.pos = pos
 		player.get_node("head").position = pos
@@ -264,27 +270,25 @@ func del_player(id: int):
 
 
 func _on_players_spawner_spawned(node):
-	node.get_node("Title").set_text(node.title)
-	node.get_node('head').position = node.pos
 	node.change_state.connect(on_player_state_change)
-	node.get_node("head/mesh").set_instance_shader_parameter("color", node.color)
+	node.spawned()
 
 
 func _on_screen_faded(anim_name):
 	$StateMachine.transit("FieldGame")
 
 func next_level():
-	set_state.rpc("FieldStart")
-	await get_tree().create_timer(.2).timeout
-	for obj in $Objects.get_children():
-		obj.queue_free()
-	change_level_id.rpc(level_id + 1)
-	await get_tree().create_timer(.1).timeout
-	for player in $Players.get_children():
-		player.reset()
-		var pos = level.find_empty_cell_center()
-		player.pos = pos
-		player.get_node('head').position = pos
+	set_state.rpc("FieldNextLevel")
+	#await get_tree().create_timer(.2).timeout
+	#for obj in $Objects.get_children():
+		#obj.queue_free()
+	#change_level_id.rpc(level_id + 1)
+	#await get_tree().create_timer(.1).timeout
+	#for player in $Players.get_children():
+		#player.reset()
+		#var pos = level.find_empty_cell_center()
+		#player.pos = pos
+		#player.get_node('head').position = pos
 		
 
 @rpc("any_peer","call_local")
@@ -298,3 +302,6 @@ func change_level_id(new_id):
 @rpc("any_peer", "call_local")
 func set_state(new_state):
 	$StateMachine.transit(new_state)
+
+func _on_state_change(state, current_state):
+	print('Field State: ', current_state,'->',state)

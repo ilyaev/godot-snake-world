@@ -5,18 +5,16 @@ extends Node
 
 signal level_completed
 
+const CHECK_INTERVAL := 1.
+
 var T := 0.
 
-# Called when the node enters the scene tree for the first time.
 func _ready():
 	set_process(multiplayer.is_server())
-	pass # Replace with function body.
 
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	T += delta;
-	if T < 1.:
+	if T < CHECK_INTERVAL:
 		return
 	T = 0.
 	var empty_map = field.level.empty_map

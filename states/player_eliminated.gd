@@ -16,7 +16,7 @@ func Enter():
 	#player.pos = Vector3(randi_range(-5,5),randi_range(-5,5),0)
 	#player.get_node("head").position = player.pos
 	
-	get_parent().transit("PlayerNormal")
+	#get_parent().transit("PlayerNormal")
 
 
 func Physics_Update(_delta):
