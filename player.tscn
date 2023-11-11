@@ -31,6 +31,9 @@ properties/4/replication_mode = 0
 properties/5/path = NodePath(".:color")
 properties/5/spawn = true
 properties/5/replication_mode = 0
+properties/6/path = NodePath(".:is_autopilot")
+properties/6/spawn = true
+properties/6/replication_mode = 0
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_hoavk"]
 properties/0/path = NodePath(".:direction")

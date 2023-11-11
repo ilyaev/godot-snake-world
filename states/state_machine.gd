@@ -43,5 +43,5 @@ func on_child_transition(state, new_state_name):
 	current_state.Enter()
 
 func transit(state_name : String):
-	if current_state:
+	if current_state and state_name != current_state.name:
 		current_state.Transitioned.emit(current_state, state_name)

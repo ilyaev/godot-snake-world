@@ -154,11 +154,12 @@ func get_nearest_same_color(pos : Vector2, color : Color, list : Dictionary):
 
 
 func on_player_state_change(state : String, current_state : String, player : Player):
-	#print([player.get_node('Title').get_text(), current_state,'->',state])
-	if state == 'PlayerStarting' and current_state == 'PlayerEliminated':
-		var pos = level.find_empty_cell_center()
-		player.pos = pos
-		player.get_node("head").position = pos
+	#print([player.get_node('Title').get_text(), current_state,'->',state, multiplayer.is_server()])
+	if multiplayer.is_server():
+		if state == 'PlayerNormal' and current_state == 'PlayerEliminated':
+			var pos = level.find_empty_cell_center()
+			player.pos = pos
+			player.get_node("head").position = pos
 			
 	if state == 'PlayerEliminated':
 		if player.player == multiplayer.get_unique_id():
@@ -271,7 +272,7 @@ func del_player(id: int):
 
 func _on_players_spawner_spawned(node):
 	node.change_state.connect(on_player_state_change)
-	node.spawned()
+	node.spawned(node)
 
 
 func _on_screen_faded(anim_name):
@@ -279,16 +280,6 @@ func _on_screen_faded(anim_name):
 
 func next_level():
 	set_state.rpc("FieldNextLevel")
-	#await get_tree().create_timer(.2).timeout
-	#for obj in $Objects.get_children():
-		#obj.queue_free()
-	#change_level_id.rpc(level_id + 1)
-	#await get_tree().create_timer(.1).timeout
-	#for player in $Players.get_children():
-		#player.reset()
-		#var pos = level.find_empty_cell_center()
-		#player.pos = pos
-		#player.get_node('head').position = pos
 		
 
 @rpc("any_peer","call_local")

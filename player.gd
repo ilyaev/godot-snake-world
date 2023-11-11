@@ -22,7 +22,7 @@ var slate_color : Color = Color(1., 1., 1.)
 
 var cell_pos = Vector2(0, 0)
 
-var is_autopilot = false
+@export var is_autopilot = false
 
 @export var title := ""
 @export var color := Vector3(.9, .3, .1)
@@ -202,7 +202,7 @@ func _on_multiplayer_spawner_spawned(node):
 		node.position = sorted[sorted.size() - 2].position
 
 func set_state(state_name : String):
-	rpc("rpc_set_state", state_name)
+	rpc_set_state.rpc(state_name)
 
 func get_state():
 	return $StateMachine.current_state.name

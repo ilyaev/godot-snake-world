@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://7gcip1076nh1"]
+[gd_scene load_steps=10 format=3 uid="uid://7gcip1076nh1"]
 
 [ext_resource type="Script" path="res://next_level.gd" id="1_v1f6l"]
 [ext_resource type="Shader" path="res://next_level.gdshader" id="2_s38pd"]
@@ -16,57 +16,10 @@ font_size = 64
 outline_size = 3
 outline_color = Color(1, 0.403922, 0.121569, 1)
 
-[sub_resource type="Animation" id="Animation_fv5jq"]
-resource_name = "show"
-length = 2.0
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Panel:position")
-tracks/0/interp = 2
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.0333333, 0.0666667, 0.1, 0.133333, 0.166667, 0.2, 0.233333, 0.266667, 0.3, 0.333333, 0.366667, 0.4, 0.433333, 0.466667, 0.5, 0.533333, 0.566667, 0.6, 0.633333, 0.666667, 0.7, 0.733333, 0.766667, 0.8, 0.833333, 0.866667, 0.9, 0.933333, 0.966667, 1),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-"update": 0,
-"values": [Vector2(2.08165e-12, -564), Vector2(2.08165e-12, -563.609), Vector2(2.08165e-12, -563.38), Vector2(2.08165e-12, -563.809), Vector2(2.08165e-12, -565.2), Vector2(2.08165e-12, -566.757), Vector2(2.08165e-12, -566.203), Vector2(2.08165e-12, -561.23), Vector2(2.08165e-12, -553.196), Vector2(2.08165e-12, -550.498), Vector2(2.08165e-12, -565.627), Vector2(2.08165e-12, -601.106), Vector2(2.08165e-12, -630.248), Vector2(2.08165e-12, -596.097), Vector2(2.08165e-12, -457.915), Vector2(2.08165e-12, -282), Vector2(2.08165e-12, -106.084), Vector2(2.08165e-12, 32.0967), Vector2(2.08165e-12, 66.2483), Vector2(2.08165e-12, 37.1059), Vector2(2.08165e-12, 1.62679), Vector2(2.08165e-12, -13.5015), Vector2(2.08165e-12, -10.8038), Vector2(2.08165e-12, -2.77038), Vector2(2.08165e-12, 2.20312), Vector2(2.08165e-12, 2.757), Vector2(2.08165e-12, 1.19999), Vector2(2.08165e-12, -0.191281), Vector2(2.08165e-12, -0.620133), Vector2(2.08165e-12, -0.390663), Vector2(2.08165e-12, 2.08165e-12)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Panel/Container/score1:position")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0.6, 0.633333, 0.666667, 0.7, 0.733333, 0.766667, 0.8, 0.833333, 0.866667, 0.9),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-"update": 0,
-"values": [Vector2(-519, 169.752), Vector2(-517.526, 169.745), Vector2(-510.601, 169.714), Vector2(-478.291, 169.567), Vector2(-327.527, 168.885), Vector2(118.431, 166.867), Vector2(269.27, 166.184), Vector2(301.597, 166.038), Vector2(308.525, 166.007), Vector2(310, 166)]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Panel/Container/score2:position")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0.8, 0.833333, 0.866667, 0.9, 0.933333, 0.966667, 1, 1.03333, 1.06667, 1.1),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-"update": 0,
-"values": [Vector2(1180, 244), Vector2(1178.45, 244), Vector2(1171.2, 244), Vector2(1137.33, 244), Vector2(979.288, 244), Vector2(511.812, 244), Vector2(353.695, 244), Vector2(319.809, 244), Vector2(312.546, 244), Vector2(311, 244)]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("Panel/Container/score3:position")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(1, 1.03333, 1.06667, 1.1, 1.13333, 1.16667, 1.2, 1.23333, 1.26667, 1.3),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-"update": 0,
-"values": [Vector2(-550, 319), Vector2(-548.465, 319.002), Vector2(-541.257, 319.01), Vector2(-507.621, 319.049), Vector2(-350.674, 319.231), Vector2(113.574, 319.769), Vector2(270.6, 319.951), Vector2(304.252, 319.99), Vector2(311.464, 319.998), Vector2(313, 320)]
-}
+[sub_resource type="LabelSettings" id="LabelSettings_mtj3a"]
+font_size = 64
+outline_size = 2
+outline_color = Color(0, 0, 0, 1)
 
 [sub_resource type="Animation" id="Animation_qykuy"]
 length = 0.001
@@ -119,6 +72,58 @@ tracks/3/keys = {
 "values": [Vector2(-550, 319)]
 }
 
+[sub_resource type="Animation" id="Animation_fv5jq"]
+resource_name = "show"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Panel:position")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.0333333, 0.0666667, 0.1, 0.133333, 0.166667, 0.2, 0.233333, 0.266667, 0.3, 0.333333, 0.366667, 0.4, 0.433333, 0.466667, 0.5, 0.533333, 0.566667, 0.6, 0.633333, 0.666667, 0.7, 0.733333, 0.766667, 0.8, 0.833333, 0.866667, 0.9, 0.933333, 0.966667, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(2.08165e-12, -600), Vector2(2.08165e-12, -599.584), Vector2(2.08165e-12, -599.34), Vector2(2.08165e-12, -599.797), Vector2(2.08165e-12, -601.277), Vector2(2.08165e-12, -602.933), Vector2(2.08165e-12, -602.344), Vector2(2.08165e-12, -597.053), Vector2(2.08165e-12, -588.507), Vector2(2.08165e-12, -585.637), Vector2(2.08165e-12, -601.731), Vector2(2.08165e-12, -639.474), Vector2(2.08165e-12, -670.477), Vector2(2.08165e-12, -634.145), Vector2(2.08165e-12, -487.144), Vector2(2.08165e-12, -300), Vector2(2.08165e-12, -112.856), Vector2(2.08165e-12, 34.1454), Vector2(2.08165e-12, 70.4769), Vector2(2.08165e-12, 39.4743), Vector2(2.08165e-12, 1.73063), Vector2(2.08165e-12, -14.3633), Vector2(2.08165e-12, -11.4934), Vector2(2.08165e-12, -2.94721), Vector2(2.08165e-12, 2.34375), Vector2(2.08165e-12, 2.93298), Vector2(2.08165e-12, 1.27659), Vector2(2.08165e-12, -0.20349), Vector2(2.08165e-12, -0.659716), Vector2(2.08165e-12, -0.415599), Vector2(2.08165e-12, 2.08165e-12)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Panel/Container/score1:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.6, 0.633333, 0.666667, 0.7, 0.733333, 0.766667, 0.8, 0.833333, 0.866667, 0.9),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(-519, 169.752), Vector2(-517.526, 169.745), Vector2(-510.601, 169.714), Vector2(-478.291, 169.567), Vector2(-327.527, 168.885), Vector2(118.431, 166.867), Vector2(269.27, 166.184), Vector2(301.597, 166.038), Vector2(308.525, 166.007), Vector2(310, 166)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Panel/Container/score2:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.8, 0.833333, 0.866667, 0.9, 0.933333, 0.966667, 1, 1.03333, 1.06667, 1.1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(1180, 244), Vector2(1178.45, 244), Vector2(1171.2, 244), Vector2(1137.33, 244), Vector2(979.288, 244), Vector2(511.812, 244), Vector2(353.695, 244), Vector2(319.809, 244), Vector2(312.546, 244), Vector2(311, 244)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Panel/Container/score3:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(1, 1.03333, 1.06667, 1.1, 1.13333, 1.16667, 1.2, 1.23333, 1.26667, 1.3),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(-550, 319), Vector2(-548.465, 319.002), Vector2(-541.257, 319.01), Vector2(-507.621, 319.049), Vector2(-350.674, 319.231), Vector2(113.574, 319.769), Vector2(270.6, 319.951), Vector2(304.252, 319.99), Vector2(311.464, 319.998), Vector2(313, 320)]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_88ajn"]
 _data = {
 "RESET": SubResource("Animation_qykuy"),
@@ -130,13 +135,9 @@ script = ExtResource("1_v1f6l")
 
 [node name="Panel" type="Panel" parent="."]
 material = SubResource("ShaderMaterial_mbay2")
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
 offset_top = -564.0
-offset_bottom = -564.0
-grow_horizontal = 2
-grow_vertical = 2
+offset_right = 1152.0
+offset_bottom = 84.0
 
 [node name="LevelCompleted" type="Label" parent="Panel"]
 layout_mode = 1
@@ -149,30 +150,47 @@ label_settings = SubResource("LabelSettings_5g1go")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Container" type="Container" parent="Panel"]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 54.0
-offset_right = 946.0
-offset_bottom = 542.0
+[node name="Container" type="Node2D" parent="Panel"]
+position = Vector2(-7, 25)
 
 [node name="score1" type="Label" parent="Panel/Container"]
-layout_mode = 2
-text = "Player One: 3234"
+offset_left = 314.0
+offset_top = 178.0
+offset_right = 835.0
+offset_bottom = 266.0
+size_flags_stretch_ratio = 2.83
+text = "Test"
 label_settings = SubResource("LabelSettings_npint")
 horizontal_alignment = 1
 
 [node name="score2" type="Label" parent="Panel/Container"]
-layout_mode = 2
+offset_left = 310.0
+offset_top = 166.0
+offset_right = 831.0
+offset_bottom = 254.0
 text = "Player One: 3234"
 label_settings = SubResource("LabelSettings_npint")
 horizontal_alignment = 1
 
 [node name="score3" type="Label" parent="Panel/Container"]
-layout_mode = 2
+offset_left = -550.0
+offset_top = 319.0
+offset_right = -29.0
+offset_bottom = 407.0
 text = "Player One: 3234"
 label_settings = SubResource("LabelSettings_npint")
 horizontal_alignment = 1
+
+[node name="Countdown" type="Label" parent="Panel"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+offset_left = 372.0
+offset_top = 497.0
+offset_right = 785.0
+offset_bottom = 585.0
+text = "Continue in 5"
+label_settings = SubResource("LabelSettings_mtj3a")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {

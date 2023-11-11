@@ -10,7 +10,8 @@ func Enter():
 	next_level = next_level_scene.instantiate()
 	
 	for player in field.get_players():
-		player.set_state_local('PlayerPaused')
+		if multiplayer.is_server():
+			player.set_state('PlayerPaused')
 		if !player.is_autopilot:
 			next_level.scores[player.get_node('Title').get_text()] = player.score
 		
@@ -22,7 +23,12 @@ func Enter():
 func Exit():
 	field.remove_child(next_level)
 	next_level.queue_free()
+	
+	if !multiplayer.is_server():
+		return
+		
 	await get_tree().create_timer(.2).timeout
+	
 	for obj in field.get_objects():
 		obj.queue_free()
 	
@@ -35,3 +41,4 @@ func Exit():
 		var pos = field.level.find_empty_cell_center()
 		player.pos = pos
 		player.get_node('head').position = pos
+		player.set_state("PlayerNormal")
