@@ -17,7 +17,8 @@ func _process(_delta):
 		next_direction = Vector3(0, 1, 0)
 	if Input.is_action_pressed("ui_down"):
 		next_direction = Vector3(0, -1, 0)
-	direction = next_direction
+	if next_direction != direction * -1:
+		direction = next_direction
 
 func set_direction(new_direction):
 	direction = new_direction

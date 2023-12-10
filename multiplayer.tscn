@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://bvnwjpd0f3oa0"]
+[gd_scene load_steps=4 format=3 uid="uid://bvnwjpd0f3oa0"]
 
 [ext_resource type="Script" path="res://multiplayer.gd" id="1_jiv4u"]
 [ext_resource type="PackedScene" uid="uid://b1psoaww4dkmv" path="res://field.tscn" id="2_d0rqs"]
+[ext_resource type="PackedScene" uid="uid://bp3gsi0syi735" path="res://main_menu.tscn" id="3_npd1g"]
 
 [node name="Multiplayer" type="Node"]
 script = ExtResource("1_jiv4u")
@@ -24,6 +25,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Net" type="VBoxContainer" parent="UI"]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -54,6 +56,10 @@ text = "127.0.0.1"
 placeholder_text = "Remote Host"
 caret_blink = true
 caret_blink_interval = 0.5
+
+[node name="MainMenu" parent="UI" instance=ExtResource("3_npd1g")]
+unique_name_in_owner = true
+layout_mode = 1
 
 [connection signal="pressed" from="UI/Net/Options/Host" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="UI/Net/Options/Connect" to="." method="_on_connect_pressed"]

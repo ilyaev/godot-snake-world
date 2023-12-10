@@ -103,7 +103,9 @@ func collision_detection(delta):
 					rpc("set_slate_color", collider.color)
 					set_state('PlayerCarrySlate')
 		elif !(collider is Food):
-			var bounced = head_direction.bounce(collision.get_normal()).rotated(Vector3.BACK, randf_range(-PI/8, PI/8))
+			var bounced = head_direction.rotated(Vector3.BACK, PI/2).normalized()
+			if is_autopilot:
+				bounced = head_direction.bounce(collision.get_normal()).rotated(Vector3.BACK, randf_range(-PI/8, PI/8))
 			$PlayerInput.direction = Vector3(bounced.x, bounced.y, 0)
 			$PlayerInput.next_direction = $PlayerInput.direction
 			$Autopilot.set_state('evade')
@@ -145,7 +147,7 @@ func sync_title(direction):
 		$Title.show()
 
 func spawn_control():
-	if T > 1 and $Tails.get_child_count() < 3 and is_active() and $PlayerInput.direction.length() != 0:
+	if T > .1 and $Tails.get_child_count() < 1 and is_active() and $PlayerInput.direction.length() != 0:
 		T = 0
 		spawn_tail()
 
@@ -163,9 +165,9 @@ func move_tails(delta):
 
 	for tail in sorted:
 		var dist = (t_pos - tail.position).length()
-		if dist > 1:
-			dist = 1
-		tail.position += (t_pos - tail.position) * delta * SPEED * (.9 - (1. - dist)*3.)
+		#if dist > 1:
+			#dist = 1
+		tail.position += (t_pos - tail.position) * delta * SPEED * (.9 - (1. - dist)*9.)
 		t_pos = tail.position
 
 
@@ -185,7 +187,8 @@ func spawn_tail():
 	tail.next_pos = t_pos
 	tail.index = $Tails.get_child_count()
 	tail.set_color(color)
-	$head.add_collision_exception_with(tail)
+	if tail.index < 1:
+		$head.add_collision_exception_with(tail)
 	$Tails.add_child(tail, true)
 
 func _on_server_synchronizer_synchronized():
@@ -195,7 +198,8 @@ func _on_server_synchronizer_synchronized():
 
 
 func _on_multiplayer_spawner_spawned(node):
-	$head.add_collision_exception_with(node)
+	if node.index < 1:
+		$head.add_collision_exception_with(node)
 	node.set_color(color)
 	if elapsed > 2.:
 		var sorted = get_tails()

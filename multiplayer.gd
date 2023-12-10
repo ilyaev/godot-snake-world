@@ -4,6 +4,8 @@ const PORT = 4433
 
 @export var level_scene : PackedScene
 var current_level : Field
+var single_player := false
+var peer = false
 
 func _ready():
 	# Start paused
@@ -12,16 +14,27 @@ func _ready():
 	#multiplayer.server_relay = false
 
 	# Automatically start the server in headless mode.
-	if DisplayServer.get_name() == "headless" or 1 == 1:
-		print("Automatically starting dedicated server")
-		Callable(_on_host_pressed).call_deferred()
+	#if DisplayServer.get_name() == "headless" or 1 == 1:
+		#print("Automatically starting dedicated server")
+		#Callable(_on_host_pressed).call_deferred()
+		#return
+	
+	%MainMenu.single_player.connect(func(): single_player = true; _on_host_pressed())
+	%MainMenu.multi_player.connect(_on_connect_pressed)
 
-
+func _notification(what):
+	if what == NOTIFICATION_WM_GO_BACK_REQUEST:
+		exit_main_menu()
+		
 func _on_host_pressed():
 	# Start as server
-	var peer = ENetMultiplayerPeer.new()
+	print([single_player,multiplayer.multiplayer_peer])
+	if single_player and !(peer is ENetMultiplayerPeer):
+		start_game()
+		return	
+	peer = ENetMultiplayerPeer.new()
 	var result = peer.create_server(PORT)
-	if result != OK:
+	if result != OK and single_player == false:
 		#await get_tree().create_timer(randf_range(3.0, 10.0)).timeout
 		_on_connect_pressed()
 		return result
@@ -52,8 +65,6 @@ func start_game():
 	# Hide the UI and unpause to start the game.
 	$UI.hide()
 	get_tree().paused = false
-	# Only change level on the server.
-	# Clients will instantiate the level via the spawner.
 	if multiplayer.is_server():
 		Callable(change_level).call_deferred(level_scene)
 
@@ -68,9 +79,20 @@ func change_level(scene: PackedScene):
 	# Add new level.
 	Callable(level.add_child).call_deferred(scene.instantiate())
 
+func exit_main_menu():
+	$UI.show()
+	#$Level.hide()
+	get_tree().paused = true
+	var level = $Level
+	for c in level.get_children():
+		level.remove_child(c)
+		c.queue_free()
+
 func _input(event):
 	if multiplayer.is_server():
 		if event.is_action_pressed("ui_accept"):
 			print("Next Level")
 			current_level = $Level.get_child(0)
 			current_level.next_level()
+	if event.is_action_pressed("ui_cancel"):
+		exit_main_menu()

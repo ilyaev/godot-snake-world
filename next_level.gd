@@ -2,6 +2,9 @@ extends Node3D
 
 signal animation_finished
 var scores : Dictionary = {}
+var T := 0.
+
+var CONTINUE_IN = 2.
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -17,11 +20,12 @@ func _ready():
 			index += 1
 	await get_tree().create_timer(2.).timeout
 	%Countdown.show()
-	await get_tree().create_timer(5.).timeout
+	await get_tree().create_timer(CONTINUE_IN).timeout
 	animation_finished.emit()
-	pass # Replace with function body.
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	pass
+	T += delta
+	var left = (CONTINUE_IN + 2.5) - T
+	%Countdown.set_text('Continue in ' + str(round(left)))

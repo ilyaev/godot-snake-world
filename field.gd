@@ -205,10 +205,10 @@ func on_player_cell_change(cell_pos, player):
 								n_slate.show_score.rpc(slate_score)
 
 				if is_area_filled(cell_pos, slate.color, false):
-					snake.trim_tail(snake.get_node('Tails').get_children().size())
+					#snake.trim_tail(snake.get_node('Tails').get_children().size())
 					close_area(cell_pos)
-				else:
-					snake.trim_tail(score)
+				#else:
+				snake.trim_tail(score)
 		else:
 			if !player.is_autopilot:
 				player.set_state("PlayerEliminated")
